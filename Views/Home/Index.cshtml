@@ -1,0 +1,414 @@
+﻿@{
+  ViewData["Title"] = "PE Budget Overview Dashboard";
+}
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="position-fixed top-0 start-0 w-100 h-100 d-none">
+  <div class="d-flex justify-content-center align-items-center h-100">
+    <div class="text-center">
+      <button class="btn btn-spiner" type="button" disabled>
+        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        <span role="status">Loading...</span>
+      </button>
+      <div class="text-white mt-2">
+        <span id="loadingText">Loading Dashboard...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h4>@ViewData["Title"]</h4>
+<p>ภาพรวมงบประมาณ Personnel Expense (PE) – Phase 1</p>
+
+<!-- Filter Panel -->
+<div class="row filter-card">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <strong>Filters</strong>
+        <span class="small ms-1">Search Criteria</span>
+      </div>
+      <div class="card-body">
+        <form class="row g-3">
+          <!-- Primary Filters Row 1 -->
+          <div class="col-md-3">
+            <label for="companyFilter" class="form-label"><b>Company Group</b> <span style="color:red">*</span></label>
+            <div class="position-relative">
+              <select class="form-select" id="companyFilter">
+                <option value="">All Companies Group</option>
+              </select>
+              <div
+                class="spinner-border-core spinner-border-sm text-success position-absolute top-50 end-0 translate-middle-y me-3 d-none"
+                id="companySpinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="yearsFilter" class="form-label"><b>Budget Year</b> <span style="color:red">*</span></label>
+            <div class="position-relative">
+              <select class="form-select" id="yearsFilter">
+                <option value="">All Years</option>
+              </select>
+              <div
+                class="spinner-border-core spinner-border-sm text-success position-absolute top-50 end-0 translate-middle-y me-3 d-none"
+                id="yearSpinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="cobuFilter" class="form-label" id="cobuFilterLabel"><b><span
+                  id="cobuFilterLabelText">COBU/Format</span></b></label>
+            <div class="position-relative">
+              <select class="form-select" id="cobuFilter">
+                <option value="" id="cobuFilterAllOption">All COBU/Format</option>
+              </select>
+              <div
+                class="spinner-border-core spinner-border-sm text-success position-absolute top-50 end-0 translate-middle-y me-3 d-none"
+                id="formatSpinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3" id="cosFilters">
+            <label for="costcenterFilter" class="form-label"><b>Cost Center</b></label>
+            <select class="form-select" id="costcenterFilter">
+              <option value="">All Cost Centers</option>
+            </select>
+          </div>
+
+          <!-- Secondary Filters Row 2 (Hidden by default) -->
+          <div class="col-md-3" id="divFilters">
+            <label for="divisionFilter" class="form-label"><b>Division</b></label>
+            <select class="form-select" id="divisionFilter">
+              <option value="">All Divisions</option>
+            </select>
+          </div>
+          <div class="col-md-3" id="deptFilters">
+            <label for="departmentFilter" class="form-label"><b>Department</b></label>
+            <select class="form-select" id="departmentFilter">
+              <option value="">All Departments</option>
+            </select>
+          </div>
+          <div class="col-md-3" id="secFilters">
+            <label for="sectionFilter" class="form-label"><b>Section</b></label>
+            <select class="form-select" id="sectionFilter">
+              <option value="">All Sections</option>
+            </select>
+          </div>
+          <div class="col-md-3" id="compstoreFilters">
+            <label for="compstoreFilter" class="form-label"><b><span id="compstoreFilterLabelText">Company/Store
+                  name</span></b></label>
+            <select class="form-select" id="compstoreFilter">
+              <option value="" id="compstoreFilterAllOption">All Company/Store names</option>
+            </select>
+          </div>
+
+          <div class="col-md-3" id="empstatFilters">
+            <label for="empstatusFilter" class="form-label"><b>Emp Status</b></label>
+            <select class="form-select" id="empstatusFilter">
+              <option value="">All Emp Status</option>
+            </select>
+          </div>
+          <div class="col-md-3" id="posFilters">
+            <label for="positionFilter" class="form-label"><b>Position</b></label>
+            <select class="form-select" id="positionFilter">
+              <option value="">All Positions</option>
+            </select>
+          </div>
+          <div class="col-md-3" id="jbandFilters">
+            <label for="jobbandFilter" class="form-label"><b>Job Band</b></label>
+            <select class="form-select" id="jobbandFilter">
+              <option value="">All Job Bands</option>
+            </select>
+          </div>
+
+          <!-- More Options and Action Buttons - Full Width on Mobile -->
+          <div class="col-md-3 mt-auto">
+            <div
+              class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mt-3">
+              <div class="w-xauto">
+                <a id="moreOptionsToggle" class="more-options-link mt-xauto">
+                  <i class="fas fa-chevron-down me-2"></i>More Options
+                </a>
+                <div class="btn-group mb-xauto" role="group">
+                  <button class="btn btn-secondary" type="button" id="resetBtn">Reset</button>
+                  <button class="btn btn-core" type="button" id="searchBtn">Search</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Block A (KPI Cards) & Block C (Charts) -->
+<div class="row mb-4">
+  <!-- Block A: KPI Cards - 2x2 Grid -->
+  <div class="col-md-6">
+    <div class="row">
+      <!-- KPI Row 1 -->
+      <!-- KPI 1: HC Year-1 vs Year & % Growth HC -->
+      <div class="col-md-6 mb-3">
+        <div class="card kpi-card h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="kpi-label mb-0">Total Budget HC</h6>
+              <i class="fas fa-users text-primary"></i>
+            </div>
+            <div class="row mb-2">
+              <div class="col-6 text-center border-end">
+                <div class="text-muted small" id="hcPrevYearLabel">-</div>
+                <div class="kpi-value text-primary fs-5" id="hcPrevYear">-</div>
+              </div>
+              <div class="col-6 text-center">
+                <div class="text-muted small" id="hcCurrYearLabel">-</div>
+                <div class="kpi-value text-success fs-5" id="hcCurrYear">-</div>
+              </div>
+            </div>
+            <div class="text-center border-top pt-2">
+              <div class="d-flex justify-content-center align-items-center">
+                <span class="text-muted small me-2">Growth:</span>
+                <span class="kpi-value fs-6 fw-bold" id="growthHC">-</span>
+                <span class="ms-2" id="growthHCIndicator">
+                  <i class="fas fa-minus text-muted"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI 2: PE Year-1 vs Year & % Growth PE -->
+      <div class="col-md-6 mb-3">
+        <div class="card kpi-card h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="kpi-label mb-0">Total PE Budget</h6>
+              <i class="fas fa-dollar-sign text-success"></i>
+            </div>
+            <div class="row mb-2">
+              <div class="col-6 text-center border-end">
+                <div class="text-muted small" id="pePrevYearLabel">-</div>
+                <div class="kpi-value text-primary fs-6" id="pePrevYear">-</div>
+              </div>
+              <div class="col-6 text-center">
+                <div class="text-muted small" id="peCurrYearLabel">-</div>
+                <div class="kpi-value text-success fs-6" id="peCurrYear">-</div>
+              </div>
+            </div>
+            <div class="text-center border-top pt-2">
+              <div class="d-flex justify-content-center align-items-center">
+                <span class="text-muted small me-2">Growth:</span>
+                <span class="kpi-value fs-6 fw-bold" id="growthPE">-</span>
+                <span class="ms-2" id="growthPEIndicator">
+                  <i class="fas fa-minus text-muted"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI Row 2 -->
+      <!-- KPI 3: Planned Vacancy Filling (B2026) -->
+      <div class="col-md-6 mb-3">
+        <div class="card kpi-card h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="kpi-label mb-0">Vacant HC (<span id="vacantYearLabel">-</span>)</h6>
+              <i class="fas fa-user-slash text-warning"></i>
+            </div>
+            <div class="text-center mb-2">
+              <div class="kpi-value text-warning fs-3" id="vacantHcCurr">-</div>
+              <div class="text-muted small">HC</div>
+            </div>
+            <div class="border-top pt-2">
+              <div class="d-flex justify-content-between align-items-center small mb-2">
+                <span class="text-muted">PE:</span>
+                <span class="fw-bold" id="vacantPeCurr">-</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center small">
+                <span class="text-muted">% of Total HC:</span>
+                <span class="fw-bold text-warning" id="vacantPercentOfTotal">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI 4: Planned New Hiring (B2026) -->
+      <div class="col-md-6 mb-3">
+        <div class="card kpi-card h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="kpi-label mb-0">New HC (<span id="newYearLabel">-</span>)</h6>
+              <i class="fas fa-user-plus text-info"></i>
+            </div>
+            <div class="text-center mb-2">
+              <div class="kpi-value text-info fs-3" id="newHcCurr">-</div>
+              <div class="text-muted small">HC</div>
+            </div>
+            <div class="border-top pt-2">
+              <div class="d-flex justify-content-between align-items-center small mb-2">
+                <span class="text-muted">PE:</span>
+                <span class="fw-bold" id="newPeCurr">-</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center small">
+                <span class="text-muted">% of Total HC:</span>
+                <span class="fw-bold text-info" id="newPercentOfTotal">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Block C: HC Proportion Chart -->
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-header d-flex flex-column">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <strong>HC Proportion (<span id="hcCompYearLabel">B2026</span>)</strong>
+        </div>
+        <select class="form-select form-select-sm" id="hcProportionViewType">
+          <option value="ft-ct">FT vs CT</option>
+          <option value="business-unit">Business Unit</option>
+          <option value="business-partner">Business Partner</option>
+          <option value="inter-secondment">Inter & Secondment</option>
+        </select>
+      </div>
+      <div class="card-body position-relative">
+        <div class="chart-container">
+          <canvas id="hcCompositionChart"></canvas>
+        </div>
+        <!-- Loading indicator for chart -->
+        <div id="hcProportionLoading" class="position-absolute top-50 start-50 translate-middle d-none">
+          <div class="spinner-border spinner-border-sm text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Block D: HC & PE Trend Chart (BIG C Only) -->
+<div class="row mb-4" id="blockDTrendChart" style="display: none;">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+        <div class="mb-2 mb-md-0">
+          <strong id="blockDChartTitle">HC & PE Trend (2019 - 2026)</strong>
+          <span class="small ms-1" id="blockDChartSubtitle">Historical trend and budget forecast</span>
+        </div>
+        <div class="d-flex gap-3 align-items-center flex-wrap">
+          <!-- Dropdown: View Type Selection -->
+          <select id="trendViewType" class="form-select form-select-sm" style="width: auto;">
+            <option value="hc-inc">Headcount (Inc. Area Store)</option>
+            <option value="hc-exc">Headcount (Exc. Area Store)</option>
+            <option value="pe-inc">PE Budget (Inc. Area Store)</option>
+            <option value="pe-exc">PE Budget (Exc. Area Store)</option>
+          </select>
+        </div>
+      </div>
+      <div class="card-body position-relative">
+        <!-- Chart Container -->
+        <div class="chart-container" style="position: relative; height: 600px;">
+          <canvas id="trendChart"></canvas>
+        </div>
+        <!-- Loading Indicator -->
+        <div id="trendChartLoading" class="position-absolute top-50 start-50 translate-middle d-none">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Block B: Top 10 PE Growth Chart -->
+<div class="row mb-4">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header d-flex flex-column">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <strong id="blockBChartTitle">Top 10 PE Growth B2026 vs. LE2025 (Unit: KTHB)</strong>
+            <span class="small ms-1 text-success" id="blockBChartSubtitle">Total PE distribution across top divisions</span>
+          </div>
+        </div>
+        <select class="form-select form-select-sm" id="blockBViewType" style="max-width: 400px;">
+          <option value="top10-growth">Top 10 PE Growth B2026 vs. LE2025</option>
+          <option value="top5-bu">Top 5 (Business Unit) Highest B 2026</option>
+          <option value="top5-bp">Top 5 (Business Partner) Highest B 2026</option>
+          <option value="pe-per-hc">PE 2026 Per HC (Unit: KTHB)</option>
+        </select>
+      </div>
+      <div class="card-body" style="position: relative;">
+        <div class="chart-axis-title" style="display: none;">
+          <strong>PE Budget <span id="chartAxisYearLabel">-</span> (Million THB)</strong>
+        </div>
+        <div class="chart-container" style="position: relative; height: 400px;">
+          <canvas id="departmentChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Block E: Top 10 Diff PE Table -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <strong id="diffPETableTitle">Top 10 Diff PE B 2026 vs. LE 2025 (Unit: KTHB)</strong>
+        <span class="small ms-1" id="diffPETableSubtitle">PE comparison by business unit</span>
+      </div>
+      <div class="card-body p-0">
+        <div class="ag-grid-scroll-container">
+          <div id="costCenterGrid" class="ag-theme-alpine" style="height: 450px; min-width: 1400px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+  <!-- Chart.js Library -->
+  <script src="~/lib/chart/js/chart4/chart.umd.min.js"></script>
+
+  <!-- Chart.js Datalabels Plugin -->
+  <script src="~/lib/chart/js/plugin/chartjs-plugin-datalabels.min.js"></script>
+
+  <!-- SheetJS (XLSX) Library for Excel Export - Local File -->
+  <script src="~/lib/xlsx/dist/xlsx.full.min.js"></script>
+
+  <!-- BudgetPlanning Filter System (Shared Modules) -->
+  <script src="~/lib/razor/js/budget-planning/budget.plan.config.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-planning/budget.plan.core.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-planning/budget.plan.api.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-planning/budget.plan.filters.js" asp-append-version="true"></script>
+
+  <!-- PE Dashboard Modules -->
+  <script src="~/lib/razor/js/budget-pe-dashboard/budget-pe-dashboard.config.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-pe-dashboard/budget-pe-dashboard.api.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-pe-dashboard/budget-pe-dashboard.filters.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-pe-dashboard/budget-pe-dashboard.options.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-pe-dashboard/budget-pe-dashboard.form.validation.js"
+    asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-pe-dashboard/budget-pe-dashboard.events.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-pe-dashboard/budget-pe-dashboard.charts.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-pe-dashboard/budget-pe-dashboard.proportion-chart.js"
+    asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-pe-dashboard/budget-pe-dashboard.growth-chart.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-pe-dashboard/budget-pe-dashboard.grid.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-pe-dashboard/budget-pe-dashboard.trend-chart.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-pe-dashboard/budget-pe-dashboard.main.js" asp-append-version="true"></script>
+}

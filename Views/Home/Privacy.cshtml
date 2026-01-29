@@ -1,0 +1,2363 @@
+﻿@{
+  ViewData["Title"] = "Privacy Policy";
+}
+<link href="~/lib/adcoreui/coreui/css/coreui.min.css" rel="stylesheet">
+<link href="~/css/fontawesome-min.css" rel="stylesheet">
+
+<style>
+  /* Fullscreen Toggle Button Styles */
+  .fullscreen-toggle-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .fullscreen-toggle-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    border-color: #007bff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .fullscreen-toggle-btn:active {
+    transform: translateY(1px);
+  }
+
+  /* Export Excel Button Styles */
+  .export-excel-btn {
+    position: absolute;
+    top: 8px;
+    right: 60px;
+    /* Position to the left of fullscreen button */
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #28a745;
+    /* Green text color */
+  }
+
+  .export-excel-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    border-color: #28a745;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    color: #1e7e34;
+    /* Darker green on hover */
+  }
+
+  .export-excel-btn:active {
+    transform: translateY(1px);
+  }
+
+  .export-excel-btn .export-icon {
+    display: inline-block;
+    transition: transform 0.2s ease;
+    color: inherit;
+    /* Inherit color from parent */
+  }
+
+  .export-excel-btn:hover .export-icon {
+    transform: scale(1.1);
+  }
+
+  /* Detail Grid Export Button - positioned at top right without fullscreen button */
+  #btnExportDetailExcel {
+    right: 8px;
+    /* Same as fullscreen button position */
+  }
+
+  /* Dark theme support for Export Excel buttons */
+  [data-coreui-theme="dark"] .export-excel-btn {
+    background: rgba(33, 37, 41, 0.9);
+    color: #28a745;
+    border-color: #444950;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  [data-coreui-theme="dark"] .export-excel-btn:hover {
+    background: rgba(52, 58, 64, 0.95);
+    color: #34ce57;
+    border-color: #28a745;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Auto dark theme support for Export Excel buttons (system preference) */
+  @@media (prefers-color-scheme: dark) {
+    :root:not([data-coreui-theme]) .export-excel-btn {
+      background: rgba(33, 37, 41, 0.9);
+      color: #28a745;
+      border-color: #444950;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    :root:not([data-coreui-theme]) .export-excel-btn:hover {
+      background: rgba(52, 58, 64, 0.95);
+      color: #34ce57;
+      border-color: #28a745;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  /* Grid Container Positioning */
+  .grid-container {
+    position: relative;
+  }
+
+  /* Fallback Fullscreen Styles */
+  .fallback-fullscreen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 9999 !important;
+    background: white;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .fallback-fullscreen .ag-theme-alpine {
+    height: calc(100vh - 40px) !important;
+    width: 100% !important;
+  }
+
+  /* Native Fullscreen Styles */
+  .grid-container:fullscreen {
+    background: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .grid-container:-webkit-full-screen {
+    background: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .grid-container:-moz-full-screen {
+    background: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .grid-container:fullscreen .ag-theme-alpine,
+  .grid-container:-webkit-full-screen .ag-theme-alpine,
+  .grid-container:-moz-full-screen .ag-theme-alpine {
+    height: calc(100vh - 40px) !important;
+    width: 100% !important;
+    flex: 1;
+  }
+
+  /* Hide other elements when in fallback fullscreen */
+  body.fallback-fullscreen-active>*:not(.fallback-fullscreen) {
+    display: none !important;
+  }
+
+  /* Fullscreen button icon transitions */
+  .fullscreen-toggle-btn .fullscreen-enter {
+    display: inline;
+  }
+
+  .fullscreen-toggle-btn .fullscreen-exit {
+    display: none;
+  }
+
+  .fullscreen-active .fullscreen-toggle-btn .fullscreen-enter {
+    display: none;
+  }
+
+  .fullscreen-active .fullscreen-toggle-btn .fullscreen-exit {
+    display: inline;
+  }
+
+  /* Custom Stepper Styles */
+  .custom-stepper {
+    background: #2c3e50;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+  }
+
+  .stepper-horizontal {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    position: relative;
+  }
+
+  .stepper-step-horizontal {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    color: #7f8c8d;
+  }
+
+  .stepper-step-horizontal:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    right: -50%;
+    height: 2px;
+    background: #34495e;
+    z-index: 1;
+  }
+
+  .stepper-step-horizontal.completed::after {
+    background: #6c5ce7;
+  }
+
+  .stepper-step-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #34495e;
+    color: #bdc3c7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+  }
+
+  .stepper-step-horizontal.active .stepper-step-circle {
+    background: #6c5ce7;
+    color: white;
+    border-color: #6c5ce7;
+  }
+
+  .stepper-step-horizontal.completed .stepper-step-circle {
+    background: #6c5ce7;
+    color: white;
+    border-color: #6c5ce7;
+  }
+
+  .stepper-step-horizontal.completed .stepper-step-circle::after {
+    content: '✓';
+    position: absolute;
+    font-size: 12px;
+  }
+
+  /* Vertical Stepper Custom Styles */
+  .stepper-vertical .stepper-step:not(:last-child) {
+    position: relative;
+  }
+
+  .stepper-vertical .stepper-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 40px;
+    bottom: -10px;
+    width: 2px;
+    background: #34495e;
+    z-index: 1;
+  }
+
+  .stepper-vertical .stepper-step.completed:not(:last-child)::after {
+    background: #6c5ce7;
+  }
+
+  .stepper-vertical .stepper-step-button {
+    position: relative;
+    z-index: 2;
+    background: transparent;
+    border: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .stepper-vertical .stepper-step-indicator {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #34495e;
+    color: #bdc3c7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    margin-right: 15px;
+  }
+
+  .stepper-vertical .stepper-step-button.active .stepper-step-indicator {
+    background: #6c5ce7;
+    color: white;
+    border-color: #6c5ce7;
+  }
+
+  .stepper-vertical .stepper-step.completed .stepper-step-indicator {
+    background: #6c5ce7;
+    color: white;
+    border-color: #6c5ce7;
+  }
+
+  .stepper-vertical .stepper-step.completed .stepper-step-indicator::after {
+    content: '✓';
+    position: absolute;
+    font-size: 12px;
+  }
+
+  .stepper-vertical .stepper-step-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #bdc3c7;
+    transition: color 0.3s ease;
+  }
+
+  .stepper-vertical .stepper-step-button.active .stepper-step-label {
+    color: #6c5ce7;
+  }
+
+  .stepper-vertical .stepper-step.completed .stepper-step-label {
+    color: #6c5ce7;
+  }
+
+  .stepper-step-label {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    color: #bdc3c7;
+    transition: color 0.3s ease;
+  }
+
+  .stepper-step-horizontal.active .stepper-step-label {
+    color: #6c5ce7;
+  }
+
+  .stepper-step-horizontal.completed .stepper-step-label {
+    color: #6c5ce7;
+  }
+
+  .stepper-content {
+    background: white;
+    border-radius: 8px;
+    padding: 30px;
+    margin-top: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .stepper-form {
+    margin-bottom: 20px;
+  }
+
+  .stepper-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .btn-stepper {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-stepper-prev {
+    background: #6c757d;
+    color: white;
+  }
+
+  .btn-stepper-prev:hover {
+    background: #5a6268;
+  }
+
+  .btn-stepper-next {
+    background: #6c5ce7;
+    color: white;
+  }
+
+  .btn-stepper-next:hover {
+    background: #5a52d1;
+  }
+
+  .btn-stepper-finish {
+    background: #00b894;
+    color: white;
+  }
+
+  .btn-stepper-finish:hover {
+    background: #00a085;
+  }
+
+  .btn-stepper:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Form input styling for stepper */
+  .stepper-content .form-control,
+  .stepper-content .form-select {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 10px 12px;
+    transition: border-color 0.3s ease;
+  }
+
+  .stepper-content .form-control:focus,
+  .stepper-content .form-select:focus {
+    border-color: #6c5ce7;
+    box-shadow: 0 0 0 0.2rem rgba(108, 92, 231, 0.25);
+  }
+
+  .stepper-content .form-label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 8px;
+  }
+
+  /* Dark theme support */
+  [data-coreui-theme="dark"] .custom-stepper {
+    background: #1a1d23;
+  }
+
+  [data-coreui-theme="dark"] .stepper-content {
+    background: #2d3748;
+    color: #e2e8f0;
+  }
+
+  [data-coreui-theme="dark"] .stepper-content .form-control,
+  [data-coreui-theme="dark"] .stepper-content .form-select {
+    background: #4a5568;
+    border-color: #4a5568;
+    color: #e2e8f0;
+  }
+
+  [data-coreui-theme="dark"] .stepper-content .form-label {
+    color: #e2e8f0;
+  }
+
+  /* Dark theme support for vertical stepper */
+  [data-coreui-theme="dark"] .stepper-vertical .stepper-step:not(:last-child)::after {
+    background: #4a5568;
+  }
+
+  [data-coreui-theme="dark"] .stepper-vertical .stepper-step.completed:not(:last-child)::after {
+    background: #6c5ce7;
+  }
+
+  [data-coreui-theme="dark"] .stepper-vertical .stepper-step-indicator {
+    background: #4a5568;
+    color: #a0aec0;
+  }
+
+  [data-coreui-theme="dark"] .stepper-vertical .stepper-step-button.active .stepper-step-indicator {
+    background: #6c5ce7;
+    color: white;
+  }
+
+  [data-coreui-theme="dark"] .stepper-vertical .stepper-step.completed .stepper-step-indicator {
+    background: #6c5ce7;
+    color: white;
+  }
+
+  [data-coreui-theme="dark"] .stepper-vertical .stepper-step-label {
+    color: #a0aec0;
+  }
+
+  [data-coreui-theme="dark"] .stepper-vertical .stepper-step-button.active .stepper-step-label {
+    color: #6c5ce7;
+  }
+
+  [data-coreui-theme="dark"] .stepper-vertical .stepper-step.completed .stepper-step-label {
+    color: #6c5ce7;
+  }
+
+  /* Auto dark theme support for vertical stepper */
+  @@media (prefers-color-scheme: dark) {
+    :root:not([data-coreui-theme]) .stepper-vertical .stepper-step:not(:last-child)::after {
+      background: #4a5568;
+    }
+
+    :root:not([data-coreui-theme]) .stepper-vertical .stepper-step.completed:not(:last-child)::after {
+      background: #6c5ce7;
+    }
+
+    :root:not([data-coreui-theme]) .stepper-vertical .stepper-step-indicator {
+      background: #4a5568;
+      color: #a0aec0;
+    }
+
+    :root:not([data-coreui-theme]) .stepper-vertical .stepper-step-button.active .stepper-step-indicator {
+      background: #6c5ce7;
+      color: white;
+    }
+
+    :root:not([data-coreui-theme]) .stepper-vertical .stepper-step.completed .stepper-step-indicator {
+      background: #6c5ce7;
+      color: white;
+    }
+
+    :root:not([data-coreui-theme]) .stepper-vertical .stepper-step-label {
+      color: #a0aec0;
+    }
+
+    :root:not([data-coreui-theme]) .stepper-vertical .stepper-step-button.active .stepper-step-label {
+      color: #6c5ce7;
+    }
+
+    :root:not([data-coreui-theme]) .stepper-vertical .stepper-step.completed .stepper-step-label {
+      color: #6c5ce7;
+    }
+  }
+
+  /* Stepper Selection Buttons */
+  .stepper-container {
+    transition: all 0.3s ease;
+  }
+
+  .btn-group .btn {
+    border-radius: 0;
+  }
+
+  .btn-group .btn:first-child {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+  }
+
+  .btn-group .btn:last-child {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+  }
+
+  .btn-outline-primary.active {
+    background-color: #6c5ce7;
+    border-color: #6c5ce7;
+    color: white;
+  }
+
+  .btn-outline-primary:hover:not(.active) {
+    background-color: #f8f9fa;
+    border-color: #6c5ce7;
+    color: #6c5ce7;
+  }
+
+  /* Dark theme for stepper selection */
+  [data-coreui-theme="dark"] .btn-outline-primary {
+    color: #6c5ce7;
+    border-color: #6c5ce7;
+  }
+
+  [data-coreui-theme="dark"] .btn-outline-primary:hover:not(.active) {
+    background-color: #2d3748;
+    border-color: #6c5ce7;
+    color: #6c5ce7;
+  }
+</style>
+
+<h1>@ViewData["Title"]</h1>
+
+<p>Use this page to detail your site's privacy policy.</p>
+
+<div class="container-fluid">
+  <!-- Control Panel -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h5 class="card-title mb-0">Budget Data Management</h5>
+          <div class="mt-2">
+            <label for="companyFilter" class="form-label">Company ID:</label>
+            <select class="form-select" id="companyFilter" style="width: 200px; display: inline-block;">
+              <option value="2" selected>Company 2</option>
+              <option value="1">Company 1</option>
+              <option value="3">Company 3</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-6 text-end">
+          <button type="button" class="btn btn-primary" id="btnLoadData">
+            <i class="fa-solid fa-refresh"></i> Load Budget Data
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AG Grid Master-Detail Layout -->
+  <!-- Master Grid (Top) -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">
+            <i class="fa-solid fa-building"></i> Cost Centers
+          </h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="grid-container">
+            <!-- Fullscreen Toggle Button -->
+            <button type="button" id="btnToggleFullscreen" class="fullscreen-toggle-btn" title="Toggle Fullscreen">
+              <span class="fullscreen-enter">⛶</span>
+              <span class="fullscreen-exit">🗗</span>
+            </button>
+            <!-- Export Excel Button -->
+            <button type="button" id="btnExportExcel" class="export-excel-btn" title="Export to Excel">
+              <i class="fa-regular fa-file-excel"></i>
+            </button>
+            <div id="masterGrid" class="ag-theme-alpine" style="height:300px;width:100%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Grid (Bottom) -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">
+            <i class="fa-solid fa-users"></i> Employees
+            <span id="selectedCostCenter" class="text-muted ms-2"></span>
+          </h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="grid-container">
+            <!-- Export Excel Button for Detail Grid -->
+            <button type="button" id="btnExportDetailExcel" class="export-excel-btn" title="Export Employees to Excel">
+              <span class="export-icon">📊</span>
+            </button>
+            <div id="detailGrid" class="ag-theme-alpine" style="height:400px;width:100%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Benefits Offcanvas -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="benefitsOffcanvas" aria-labelledby="benefitsOffcanvasLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="benefitsOffcanvasLabel">
+        <i class="fa-solid fa-gift"></i> Employee Benefits
+        <span id="selectedEmployee" class="text-muted ms-2"></span>
+      </h5>
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" id="btnExportBenefitsExcel" class="btn btn-sm btn-success"
+          title="Export Benefits to Excel">
+          <i class="fa-solid fa-file-excel"></i>
+        </button>
+        <button type="button" class="btn-close" data-coreui-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+    </div>
+    <div class="offcanvas-body p-0">
+      <div id="benefitsGrid" class="ag-theme-alpine" style="height:100%;width:100%;"></div>
+    </div>
+  </div>
+
+  </div>
+
+  </div>
+
+<!-- Stepper Selection Buttons -->
+<div class="row mb-4">
+  <div class="col-12 text-center">
+    <div class="btn-group" role="group" aria-label="Stepper Type Selection">
+      <button type="button" class="btn btn-outline-primary active" id="btnHorizontalStepper" onclick="showStepper('horizontal')">
+        <i class="fa-solid fa-arrows-left-right"></i> Horizontal Stepper
+      </button>
+      <button type="button" class="btn btn-outline-primary" id="btnVerticalStepper" onclick="showStepper('vertical')">
+        <i class="fa-solid fa-arrows-up-down"></i> Vertical Stepper
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Horizontal Stepper -->
+<div id="horizontalStepperContainer" class="stepper-container">
+  <div class="custom-stepper">
+    <h3 class="text-center mb-4" style="color: #6c5ce7;">Horizontal Stepper Example</h3>
+    <!-- Stepper Navigation -->
+    <div class="stepper-horizontal">
+      <div class="stepper-step-horizontal active" data-step="1">
+        <div class="stepper-step-circle">1</div>
+        <div class="stepper-step-label">Step 1</div>
+      </div>
+      <div class="stepper-step-horizontal" data-step="2">
+        <div class="stepper-step-circle">2</div>
+        <div class="stepper-step-label">Step 2</div>
+      </div>
+      <div class="stepper-step-horizontal" data-step="3">
+        <div class="stepper-step-circle">3</div>
+        <div class="stepper-step-label">Step 3</div>
+      </div>
+    </div>
+
+    <!-- Stepper Content -->
+    <div class="stepper-content">
+      <!-- Step 1 Content -->
+      <div class="step-content" data-step="1">
+        <h4 class="mb-4">Personal Information</h4>
+        <form class="stepper-form">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label for="firstName" class="form-label">First name</label>
+              <input type="text" class="form-control" id="firstName" value="Łukasz" required>
+              <div class="valid-feedback">Looks good!</div>
+              <div class="invalid-feedback">Please provide a valid first name.</div>
+            </div>
+            <div class="col-md-4">
+              <label for="lastName" class="form-label">Last name</label>
+              <input type="text" class="form-control" id="lastName" value="Holeczek" required>
+              <div class="valid-feedback">Looks good!</div>
+              <div class="invalid-feedback">Please provide a valid last name.</div>
+            </div>
+            <div class="col-md-4">
+              <label for="username" class="form-label">Username</label>
+              <div class="input-group has-validation">
+                <span class="input-group-text">@@</span>
+                <input type="text" class="form-control" id="username" required>
+                <div class="invalid-feedback">Please choose a username.</div>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="stepper-buttons">
+          <div></div>
+          <button type="button" class="btn-stepper btn-stepper-next" onclick="nextStep()">Next</button>
+        </div>
+      </div>
+
+      <!-- Step 2 Content -->
+      <div class="step-content" data-step="2" style="display: none;">
+        <h4 class="mb-4">Address Information</h4>
+        <form class="stepper-form">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="city" class="form-label">City</label>
+              <input type="text" class="form-control" id="city" required>
+              <div class="invalid-feedback">Please provide a valid city.</div>
+            </div>
+            <div class="col-md-3">
+              <label for="state" class="form-label">State</label>
+              <select class="form-select" id="state" required>
+                <option selected disabled value="">Choose...</option>
+                <option value="CA">California</option>
+                <option value="NY">New York</option>
+                <option value="TX">Texas</option>
+                <option value="FL">Florida</option>
+              </select>
+              <div class="invalid-feedback">Please select a valid state.</div>
+            </div>
+            <div class="col-md-3">
+              <label for="zip" class="form-label">Zip</label>
+              <input type="text" class="form-control" id="zip" required>
+              <div class="invalid-feedback">Please provide a valid zip.</div>
+            </div>
+          </div>
+        </form>
+        <div class="stepper-buttons">
+          <button type="button" class="btn-stepper btn-stepper-prev" onclick="prevStep()">Previous</button>
+          <button type="button" class="btn-stepper btn-stepper-next" onclick="nextStep()">Next</button>
+        </div>
+      </div>
+
+      <!-- Step 3 Content -->
+      <div class="step-content" data-step="3" style="display: none;">
+        <h4 class="mb-4">Account Information</h4>
+        <form class="stepper-form">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" required>
+              <div class="invalid-feedback">Please provide a valid email.</div>
+            </div>
+            <div class="col-md-6">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" required>
+              <div class="invalid-feedback">Please provide a password.</div>
+            </div>
+            <div class="col-12">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="terms" required>
+                <label class="form-check-label" for="terms">
+                  I agree to the terms and conditions
+                </label>
+                <div class="invalid-feedback">You must agree before submitting.</div>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="stepper-buttons">
+          <button type="button" class="btn-stepper btn-stepper-prev" onclick="prevStep()">Previous</button>
+          <button type="button" class="btn-stepper btn-stepper-finish" onclick="finishStepper()">Finish</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Vertical Stepper -->
+<div id="verticalStepperContainer" class="stepper-container" style="display: none;">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title mb-0">
+            <i class="fa-solid fa-list-ol"></i> Vertical Stepper Example
+          </h3>
+        </div>
+        <div class="card-body">
+          <div class="stepper stepper-vertical" data-coreui-toggle="stepper">
+            <ol class="stepper-steps">
+              <li class="stepper-step">
+                <button type="button" class="stepper-step-button active" data-coreui-toggle="step">
+                  <span class="stepper-step-indicator">1</span>
+                  <span class="stepper-step-label">Step 1</span>
+                </button>
+                <div class="stepper-step-content">
+                  <div class="py-3">
+                    <h5 class="mb-3">Personal Information</h5>
+                    <form class="row g-3 mb-4">
+                      <div class="col-md-4">
+                        <label for="vFirstName" class="form-label">First name</label>
+                        <input type="text" class="form-control" id="vFirstName" value="Łukasz" required>
+                        <div class="valid-feedback">Looks good!</div>
+                        <div class="invalid-feedback">Please provide a valid first name.</div>
+                      </div>
+                      <div class="col-md-4">
+                        <label for="vLastName" class="form-label">Last name</label>
+                        <input type="text" class="form-control" id="vLastName" value="Holeczek" required>
+                        <div class="valid-feedback">Looks good!</div>
+                        <div class="invalid-feedback">Please provide a valid last name.</div>
+                      </div>
+                      <div class="col-md-4">
+                        <label for="vUsername" class="form-label">Username</label>
+                        <div class="input-group has-validation">
+                          <span class="input-group-text">@@</span>
+                          <input type="text" class="form-control" id="vUsername" required>
+                          <div class="invalid-feedback">Please choose a username.</div>
+                        </div>
+                      </div>
+                    </form>
+                    <button class="btn btn-primary" data-coreui-stepper-action="next">Next</button>
+                  </div>
+                </div>
+              </li>
+              <li class="stepper-step">
+                <button type="button" class="stepper-step-button" data-coreui-toggle="step">
+                  <span class="stepper-step-indicator">2</span>
+                  <span class="stepper-step-label">Step 2</span>
+                </button>
+                <div class="stepper-step-content">
+                  <div class="py-3">
+                    <h5 class="mb-3">Address Information</h5>
+                    <form class="row g-3 mb-4">
+                      <div class="col-md-6">
+                        <label for="vCity" class="form-label">City</label>
+                        <input type="text" class="form-control" id="vCity" required>
+                        <div class="invalid-feedback">Please provide a valid city.</div>
+                      </div>
+                      <div class="col-md-3">
+                        <label for="vState" class="form-label">State</label>
+                        <select class="form-select" id="vState" required>
+                          <option selected disabled value="">Choose...</option>
+                          <option value="CA">California</option>
+                          <option value="NY">New York</option>
+                          <option value="TX">Texas</option>
+                          <option value="FL">Florida</option>
+                        </select>
+                        <div class="invalid-feedback">Please select a valid state.</div>
+                      </div>
+                      <div class="col-md-3">
+                        <label for="vZip" class="form-label">Zip</label>
+                        <input type="text" class="form-control" id="vZip" required>
+                        <div class="invalid-feedback">Please provide a valid zip.</div>
+                      </div>
+                    </form>
+                    <button class="btn btn-secondary" data-coreui-stepper-action="prev">Previous</button>
+                    <button class="btn btn-primary" data-coreui-stepper-action="next">Next</button>
+                  </div>
+                </div>
+              </li>
+              <li class="stepper-step">
+                <button type="button" class="stepper-step-button" data-coreui-toggle="step">
+                  <span class="stepper-step-indicator">3</span>
+                  <span class="stepper-step-label">Step 3</span>
+                </button>
+                <div class="stepper-step-content">
+                  <div class="pt-3">
+                    <h5 class="mb-3">Account Information</h5>
+                    <form class="row g-3 mb-4">
+                      <div class="col-md-6">
+                        <label for="vEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="vEmail" required>
+                        <div class="invalid-feedback">Please provide a valid email.</div>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="vPassword" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="vPassword" required>
+                        <div class="invalid-feedback">Please provide a password.</div>
+                      </div>
+                      <div class="col-12">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="vTerms" required>
+                          <label class="form-check-label" for="vTerms">
+                            I agree to the terms and conditions
+                          </label>
+                          <div class="invalid-feedback">You must agree before submitting.</div>
+                        </div>
+                      </div>
+                    </form>
+                    <button class="btn btn-secondary" data-coreui-stepper-action="prev">Previous</button>
+                    <button class="btn btn-success" data-coreui-stepper-action="finish">Finish</button>
+                  </div>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="stepper stepper-vertical" data-coreui-toggle="stepper" style="display: none;">
+  <ol class="stepper-steps">
+    <li class="stepper-step">
+      <button type="button" class="stepper-step-button active" data-coreui-toggle="step">
+        <span class="stepper-step-indicator">1</span>
+        <span class="stepper-step-label">Step 1</span>
+      </button>
+      <div class="stepper-step-content">
+        <div class="py-3">
+          <form class="row g-3 mb-4">
+            <div class="col-md-4">
+              <label for="horizontalStepper201" class="form-label">First name</label>
+              <input type="text" class="form-control" id="horizontalStepper201" value="Łukasz">
+              <div class="valid-feedback">
+                Looks good!
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="horizontalStepper202" class="form-label">Last name</label>
+              <input type="text" class="form-control" id="horizontalStepper202" value="Holeczek">
+              <div class="valid-feedback">
+                Looks good!
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="horizontalStepper2Username" class="form-label">Username</label>
+              <div class="input-group has-validation">
+                <span class="input-group-text" id="inputGroupPrepend">@@</span>
+                <input type="text" class="form-control" id="horizontalStepper2Username" aria-describedby="inputGroupPrepend">
+                <div class="invalid-feedback">
+                  Please choose a username.
+                </div>
+              </div>
+            </div>
+          </form>
+          <button class="btn btn-primary" data-coreui-stepper-action="next">Next</button>
+        </div>
+      </div>
+    </li>
+    <li class="stepper-step">
+      <button type="button" class="stepper-step-button" data-coreui-toggle="step">
+        <span class="stepper-step-indicator">2</span>
+        <span class="stepper-step-label">Step 2</span>
+      </button>
+      <div class="stepper-step-content">
+        <div class="py-3">
+          <form class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label for="horizontalStepper203" class="form-label">City</label>
+              <input type="text" class="form-control" id="horizontalStepper203">
+              <div class="invalid-feedback">
+                Please provide a valid city.
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="horizontalStepper204" class="form-label">State</label>
+              <select class="form-select" id="horizontalStepper204">
+                <option selected disabled value="">Choose...</option>
+                <option>...</option>
+              </select>
+              <div class="invalid-feedback">
+                Please select a valid state.
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="horizontalStepper205" class="form-label">Zip</label>
+              <input type="text" class="form-control" id="horizontalStepper205">
+              <div class="invalid-feedback">
+                Please provide a valid zip.
+              </div>
+            </div>
+          </form>
+          <button class="btn btn-secondary" data-coreui-stepper-action="prev">Previous</button>
+          <button class="btn btn-primary" data-coreui-stepper-action="next">Next</button>
+        </div>
+      </div>
+    </li>
+    <li class="stepper-step">
+      <button type="button" class="stepper-step-button" data-coreui-toggle="step">
+        <span class="stepper-step-indicator">3</span>
+        <span class="stepper-step-label">Step 3</span>
+      </button>
+      <div class="stepper-step-content">
+        <div class="pt-3">
+          <form class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label for="horizontalStepper206" class="form-label">Email</label>
+              <input type="email" class="form-control" id="horizontalStepper206">
+            </div>
+            <div class="col-md-6">
+              <label for="horizontalStepper207" class="form-label">Password</label>
+              <input type="password" class="form-control" id="horizontalStepper207">
+            </div>
+            <div class="col-12">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="horizontalStepper208">
+                <label class="form-check-label" for="horizontalStepper208">
+                  Check me out
+                </label>
+              </div>
+            </div>
+          </form>
+          <button class="btn btn-secondary" data-coreui-stepper-action="prev">Previous</button>
+          <button class="btn btn-success" data-coreui-stepper-action="finish">Finish</button>
+        </div>
+      </div>
+    </li>
+  </ol>
+</div>
+
+
+</div>
+
+<script>
+  // AG Grid Configuration
+  let masterGridApi;
+  let detailGridApi;
+  let benefitsGridApi;
+  let benefitsOffcanvas;
+  let rowCounter = 0;
+  let allData = []; // Store all data for filtering
+
+  // Fullscreen functionality
+  let isFullscreenActive = false;
+  let originalParent = null;
+  let originalNextSibling = null;
+
+  // Check if Fullscreen API is supported
+  function isFullscreenSupported() {
+    return !!(
+      document.fullscreenEnabled ||
+      document.webkitFullscreenEnabled ||
+      document.mozFullScreenEnabled ||
+      document.msFullscreenEnabled
+    );
+  }
+
+  // Enter native fullscreen
+  function enterNativeFullscreen(element) {
+    if (element.requestFullscreen) {
+      return element.requestFullscreen();
+    } else if (element.webkitRequestFullscreen) {
+      return element.webkitRequestFullscreen();
+    } else if (element.mozRequestFullScreen) {
+      return element.mozRequestFullScreen();
+    } else if (element.msRequestFullscreen) {
+      return element.msRequestFullscreen();
+    }
+    return Promise.reject('Fullscreen not supported');
+  }
+
+  // Exit native fullscreen
+  function exitNativeFullscreen() {
+    if (document.exitFullscreen) {
+      return document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      return document.webkitExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      return document.mozCancelFullScreen();
+    } else if (document.msExitFullscreen) {
+      return document.msExitFullscreen();
+    }
+    return Promise.reject('Exit fullscreen not supported');
+  }
+
+  // Check if currently in native fullscreen
+  function isInNativeFullscreen() {
+    return !!(
+      document.fullscreenElement ||
+      document.webkitFullscreenElement ||
+      document.mozFullScreenElement ||
+      document.msFullscreenElement
+    );
+  }
+
+  // Enter fallback fullscreen
+  function enterFallbackFullscreen() {
+    const gridContainer = document.querySelector('.grid-container');
+
+    // Store original position
+    originalParent = gridContainer.parentNode;
+    originalNextSibling = gridContainer.nextSibling;
+
+    // Add fallback fullscreen class
+    gridContainer.classList.add('fallback-fullscreen');
+    document.body.classList.add('fallback-fullscreen-active');
+
+    // Move to body
+    document.body.appendChild(gridContainer);
+
+    return Promise.resolve();
+  }
+
+  // Exit fallback fullscreen
+  function exitFallbackFullscreen() {
+    const gridContainer = document.querySelector('.grid-container');
+
+    // Remove fallback fullscreen class
+    gridContainer.classList.remove('fallback-fullscreen');
+    document.body.classList.remove('fallback-fullscreen-active');
+
+    // Restore original position
+    if (originalParent) {
+      if (originalNextSibling) {
+        originalParent.insertBefore(gridContainer, originalNextSibling);
+      } else {
+        originalParent.appendChild(gridContainer);
+      }
+    }
+
+    return Promise.resolve();
+  }
+
+  // Resize grid after fullscreen change
+  function resizeGrid() {
+    setTimeout(() => {
+      if (masterGridApi) {
+        masterGridApi.sizeColumnsToFit();
+        // Trigger layout recalculation
+        window.dispatchEvent(new Event('resize'));
+      }
+    }, 100);
+  }
+
+  // Export to Excel function
+  function exportToExcel() {
+    exportGridToExcel('master');
+  }
+
+  // Export Detail Grid to Excel function
+  function exportDetailToExcel() {
+    exportGridToExcel('detail');
+  }
+
+  // Export Benefits Grid to Excel function
+  function exportBenefitsToExcel() {
+    exportGridToExcel('benefits');
+  }
+
+  // Generic Export Grid to Excel function
+  function exportGridToExcel(gridType) {
+    try {
+      // Get current date for filename
+      const now = new Date();
+      const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD format
+      const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, ''); // HHMMSS format
+
+      let filename, gridApi, sheetName, columnKeys, buttonId;
+
+      if (gridType === 'detail') {
+        // Export detail grid
+        const masterSelectedNodes = masterGridApi.getSelectedNodes();
+        const selectedCostCenter = masterSelectedNodes.length > 0 ?
+          masterSelectedNodes[0].data.costCenterName : 'AllEmployees';
+
+        filename = `Employees_${selectedCostCenter}_${dateStr}_${timeStr}.xlsx`;
+        gridApi = detailGridApi;
+        sheetName = 'Employee Details';
+        columnKeys = ['empCode', 'empStatus', 'fnameTh', 'lnameTh', 'positionName', 'jobBand', 'orgLevel2', 'orgLevel3', 'joinDate', 'payroll', 'bonus'];
+        buttonId = 'btnExportDetailExcel';
+      } else if (gridType === 'benefits') {
+        // Export benefits grid
+        const selectedEmployee = document.getElementById('selectedEmployee').textContent.replace('- ', '').replace(/\s*\([^)]*\)/, '');
+        const employeeName = selectedEmployee || 'Employee';
+
+        filename = `Benefits_${employeeName}_${dateStr}_${timeStr}.xlsx`;
+        gridApi = benefitsGridApi;
+        sheetName = 'Employee Benefits';
+        columnKeys = ['benefitType', 'currentAmount', 'nextAmount', 'difference', 'peSbMth', 'peSbLe'];
+        buttonId = 'btnExportBenefitsExcel';
+      } else {
+        // Export master grid
+        filename = `CostCenters_${dateStr}_${timeStr}.xlsx`;
+        gridApi = masterGridApi;
+        sheetName = 'Cost Centers';
+        columnKeys = ['costCenterCode', 'costCenterName', 'employeeCount', 'activeCount', 'vacantCount', 'newCount', 'onProgressCount'];
+        buttonId = 'btnExportExcel';
+      }
+
+      // Check if grid has data
+      let hasData = false;
+      gridApi.forEachNode(node => {
+        if (node.data) {
+          hasData = true;
+        }
+      });
+
+      if (!hasData) {
+        alert('No data to export. Please load data first.');
+        return;
+      }
+
+      // Export data
+      gridApi.exportDataAsExcel({
+        fileName: filename,
+        sheetName: sheetName,
+        author: 'Budget System',
+        columnKeys: columnKeys
+      });
+
+      console.log(`Exported ${gridType} grid to: ${filename}`);
+
+      // Visual feedback
+      const exportBtn = document.getElementById(buttonId);
+      if (exportBtn) {
+        const originalContent = exportBtn.innerHTML;
+        if (gridType === 'benefits') {
+          exportBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+        } else {
+          exportBtn.innerHTML = '<span style="color: #28a745;">✓</span>';
+        }
+        exportBtn.disabled = true;
+
+        setTimeout(() => {
+          exportBtn.innerHTML = originalContent;
+          exportBtn.disabled = false;
+        }, 1500);
+      }
+
+    } catch (error) {
+      console.error('Export to Excel failed:', error);
+      alert('Export failed. Please try again.');
+    }
+  }
+
+  // Toggle fullscreen
+  async function toggleFullscreen() {
+    try {
+      if (isFullscreenActive) {
+        // Exit fullscreen
+        if (isInNativeFullscreen()) {
+          await exitNativeFullscreen();
+        } else {
+          await exitFallbackFullscreen();
+        }
+        isFullscreenActive = false;
+        document.body.classList.remove('fullscreen-active');
+      } else {
+        // Enter fullscreen
+        const gridContainer = document.querySelector('.grid-container');
+
+        if (isFullscreenSupported()) {
+          try {
+            await enterNativeFullscreen(gridContainer);
+            isFullscreenActive = true;
+          } catch (error) {
+            console.warn('Native fullscreen failed, using fallback:', error);
+            await enterFallbackFullscreen();
+            isFullscreenActive = true;
+          }
+        } else {
+          await enterFallbackFullscreen();
+          isFullscreenActive = true;
+        }
+        document.body.classList.add('fullscreen-active');
+      }
+
+      resizeGrid();
+    } catch (error) {
+      console.error('Fullscreen toggle failed:', error);
+    }
+  }
+
+  // Handle fullscreen change events
+  function handleFullscreenChange() {
+    const inNativeFullscreen = isInNativeFullscreen();
+
+    if (!inNativeFullscreen && isFullscreenActive) {
+      // User exited fullscreen via ESC key
+      isFullscreenActive = false;
+      document.body.classList.remove('fullscreen-active');
+      resizeGrid();
+    }
+  }
+
+  // Master Grid Columns (Cost Center Summary)
+  const masterColumns = [
+    { headerName: "Cost Center Code", field: "costCenterCode", sortable: true, filter: true, width: 150, pinned: 'left' },
+    { headerName: "Cost Center Name", field: "costCenterName", sortable: true, filter: true, width: 200, pinned: 'left' },
+    {
+      headerName: "Total Count", field: "employeeCount", sortable: true, filter: true, width: 100,
+      cellStyle: { textAlign: 'center' }, headerClass: 'text-center'
+    },
+    {
+      headerName: "Active", field: "activeCount", sortable: true, filter: true, width: 80,
+      cellStyle: { textAlign: 'center' }, headerClass: 'text-center'
+    },
+    {
+      headerName: "Vacant", field: "vacantCount", sortable: true, filter: true, width: 80,
+      cellStyle: { textAlign: 'center' }, headerClass: 'text-center'
+    },
+    {
+      headerName: "New", field: "newCount", sortable: true, filter: true, width: 80,
+      cellStyle: { textAlign: 'center' }, headerClass: 'text-center'
+    },
+    {
+      headerName: "On Progress", field: "onProgressCount", sortable: true, filter: true, width: 100,
+      cellStyle: { textAlign: 'center' }, headerClass: 'text-center'
+    }
+  ];
+
+  // Detail Grid Columns (Employee Details)
+  const detailColumns = [
+    { headerName: "Employee ID", field: "empCode", sortable: true, filter: true, width: 120, pinned: 'left' },
+    { headerName: "Employee Status", field: "empStatus", sortable: true, filter: true, width: 120 },
+    { headerName: "Name (TH)", field: "fnameTh", sortable: true, filter: true, width: 150 },
+    { headerName: "Lastname (TH)", field: "lnameTh", sortable: true, filter: true, width: 150 },
+    { headerName: "Position", field: "positionName", sortable: true, filter: true, width: 180 },
+    { headerName: "Job Band", field: "jobBand", sortable: true, filter: true, width: 100 },
+    { headerName: "Department", field: "orgLevel2", sortable: true, filter: true, width: 150 },
+    { headerName: "Section", field: "orgLevel3", sortable: true, filter: true, width: 150 },
+    { headerName: "Join Date", field: "joinDate", sortable: true, filter: true, width: 120 },
+    {
+      headerName: "Payroll", field: "payroll", sortable: true, filter: true, width: 120,
+      valueFormatter: params => params.value ? params.value.toLocaleString() : '0',
+      cellStyle: { textAlign: 'right' }, headerClass: 'text-center'
+    },
+    {
+      headerName: "Bonus", field: "bonus", sortable: true, filter: true, width: 120,
+      valueFormatter: params => params.value ? params.value.toLocaleString() : '0',
+      cellStyle: { textAlign: 'right' }, headerClass: 'text-center'
+    }
+  ];
+
+  // Benefits Grid Columns (Employee Benefits Details)
+  const benefitsColumns = [
+    { headerName: "Benefit Type", field: "benefitType", sortable: true, filter: true, width: 200, pinned: 'left' },
+    {
+      headerName: "Current Year", field: "currentAmount", sortable: true, filter: true, width: 140,
+      valueFormatter: params => params.value ? params.value.toLocaleString() : '0',
+      cellStyle: { textAlign: 'right' }, headerClass: 'text-center'
+    },
+    {
+      headerName: "Next Year", field: "nextAmount", sortable: true, filter: true, width: 140,
+      valueFormatter: params => params.value ? params.value.toLocaleString() : '0',
+      cellStyle: { textAlign: 'right' }, headerClass: 'text-center'
+    },
+    {
+      headerName: "Difference", field: "difference", sortable: true, filter: true, width: 140,
+      valueFormatter: params => {
+        if (!params.value) return '0';
+        const value = params.value;
+        return value >= 0 ? `+${value.toLocaleString()}` : value.toLocaleString();
+      },
+      cellStyle: params => {
+        if (!params.value) return { textAlign: 'right' };
+        return {
+          textAlign: 'right',
+          color: params.value >= 0 ? '#28a745' : '#dc3545',
+          fontWeight: 'bold'
+        };
+      },
+      headerClass: 'text-center'
+    },
+    {
+      headerName: "PE SB MTH", field: "peSbMth", sortable: true, filter: true, width: 120,
+      valueFormatter: params => params.value ? params.value.toLocaleString() : '0',
+      cellStyle: { textAlign: 'right' }, headerClass: 'text-center'
+    },
+    {
+      headerName: "PE SB LE", field: "peSbLe", sortable: true, filter: true, width: 120,
+      valueFormatter: params => params.value ? params.value.toLocaleString() : '0',
+      cellStyle: { textAlign: 'right' }, headerClass: 'text-center'
+    }
+  ];
+
+  // Master Grid Options
+  const masterGridOptions = {
+    columnDefs: masterColumns,
+    defaultColDef: {
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    getRowId: params => params.data ? String(params.data.costCenterCode) : `master_${++rowCounter}`,
+    animateRows: true,
+    rowSelection: 'single',
+    onSelectionChanged: onMasterSelectionChanged
+  };
+
+  // Detail Grid Options
+  const detailGridOptions = {
+    columnDefs: detailColumns,
+    defaultColDef: {
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    getRowId: params => params.data ? String(params.data.empCode || `detail_${++rowCounter}`) : `detail_${++rowCounter}`,
+    animateRows: true,
+    rowSelection: 'single',
+    onSelectionChanged: onDetailSelectionChanged
+  };
+
+  // Benefits Grid Options
+  const benefitsGridOptions = {
+    columnDefs: benefitsColumns,
+    defaultColDef: {
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    getRowId: params => params.data ? String(params.data.benefitType || `benefit_${++rowCounter}`) : `benefit_${++rowCounter}`,
+    animateRows: true
+  };
+
+  // Handle Detail Grid Selection Change
+  function onDetailSelectionChanged() {
+    const selectedNodes = detailGridApi.getSelectedNodes();
+    if (selectedNodes.length > 0) {
+      const selectedEmployee = selectedNodes[0].data;
+      updateBenefitsGrid(selectedEmployee);
+
+      // Show benefits offcanvas
+      if (benefitsOffcanvas) {
+        benefitsOffcanvas.show();
+      }
+    } else {
+      // Hide benefits offcanvas when no employee selected
+      if (benefitsOffcanvas) {
+        benefitsOffcanvas.hide();
+      }
+      document.getElementById('selectedEmployee').textContent = '';
+    }
+  }
+
+  // Update Benefits Grid with employee benefits
+  function updateBenefitsGrid(employee) {
+    const benefitsData = createBenefitsData(employee);
+    benefitsGridApi.updateGridOptions({ rowData: benefitsData });
+    document.getElementById('selectedEmployee').textContent = `- ${employee.fnameTh} ${employee.lnameTh} (${employee.empCode})`;
+  }
+
+  // Create Benefits Data from Employee
+  function createBenefitsData(employee) {
+    const benefits = [
+      {
+        benefitType: 'Fleet Card PE',
+        currentAmount: employee.fleetCardPe || 0,
+        nextAmount: employee.fleetCardPeNx || 0,
+        difference: (employee.fleetCardPeNx || 0) - (employee.fleetCardPe || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      },
+      {
+        benefitType: 'Car Allowance',
+        currentAmount: employee.carAllowance || 0,
+        nextAmount: employee.carAllowanceNx || 0,
+        difference: (employee.carAllowanceNx || 0) - (employee.carAllowance || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      },
+      {
+        benefitType: 'License Allowance',
+        currentAmount: employee.licenseAllowance || 0,
+        nextAmount: employee.licenseAllowanceNx || 0,
+        difference: (employee.licenseAllowanceNx || 0) - (employee.licenseAllowance || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      },
+      {
+        benefitType: 'Housing Allowance',
+        currentAmount: employee.housingAllowance || 0,
+        nextAmount: employee.housingAllowanceNx || 0,
+        difference: (employee.housingAllowanceNx || 0) - (employee.housingAllowance || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      },
+      {
+        benefitType: 'Gasoline Allowance',
+        currentAmount: employee.gasolineAllowance || 0,
+        nextAmount: employee.gasolineAllowanceNx || 0,
+        difference: (employee.gasolineAllowanceNx || 0) - (employee.gasolineAllowance || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      },
+      {
+        benefitType: 'Wage Student',
+        currentAmount: employee.wageStudent || 0,
+        nextAmount: employee.wageStudentNx || 0,
+        difference: (employee.wageStudentNx || 0) - (employee.wageStudent || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      },
+      {
+        benefitType: 'Car Rental PE',
+        currentAmount: employee.carRentalPe || 0,
+        nextAmount: employee.carRentalPeNx || 0,
+        difference: (employee.carRentalPeNx || 0) - (employee.carRentalPe || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      },
+      {
+        benefitType: 'Skill Pay Allowance',
+        currentAmount: employee.skillPayAllowance || 0,
+        nextAmount: employee.skillPayAllowanceNx || 0,
+        difference: (employee.skillPayAllowanceNx || 0) - (employee.skillPayAllowance || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      },
+      {
+        benefitType: 'Other Allowance',
+        currentAmount: employee.otherAllowance || 0,
+        nextAmount: employee.otherAllowanceNx || 0,
+        difference: (employee.otherAllowanceNx || 0) - (employee.otherAllowance || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      },
+      {
+        benefitType: 'Social Security',
+        currentAmount: employee.socialSecurity || 0,
+        nextAmount: employee.socialSecurityNx || 0,
+        difference: (employee.socialSecurityNx || 0) - (employee.socialSecurity || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      },
+      {
+        benefitType: 'Labor Fund Fee',
+        currentAmount: employee.laborFundFee || 0,
+        nextAmount: employee.laborFundFeeNx || 0,
+        difference: (employee.laborFundFeeNx || 0) - (employee.laborFundFee || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      },
+      {
+        benefitType: 'Other Staff Benefit',
+        currentAmount: employee.otherStaffBenefit || 0,
+        nextAmount: employee.otherStaffBenefitNx || 0,
+        difference: (employee.otherStaffBenefitNx || 0) - (employee.otherStaffBenefit || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      },
+      {
+        benefitType: 'Provident Fund',
+        currentAmount: employee.providentFund || 0,
+        nextAmount: employee.providentFundNx || 0,
+        difference: (employee.providentFundNx || 0) - (employee.providentFund || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      },
+      {
+        benefitType: 'Provision',
+        currentAmount: employee.provision || 0,
+        nextAmount: employee.provisionNx || 0,
+        difference: (employee.provisionNx || 0) - (employee.provision || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      },
+      {
+        benefitType: 'Interest',
+        currentAmount: employee.interest || 0,
+        nextAmount: employee.interestNx || 0,
+        difference: (employee.interestNx || 0) - (employee.interest || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      },
+      {
+        benefitType: 'Staff Insurance',
+        currentAmount: employee.staffInsurance || 0,
+        nextAmount: employee.staffInsuranceNx || 0,
+        difference: (employee.staffInsuranceNx || 0) - (employee.staffInsurance || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      },
+      {
+        benefitType: 'Medical Expense',
+        currentAmount: employee.medicalExpense || 0,
+        nextAmount: employee.medicalExpenseNx || 0,
+        difference: (employee.medicalExpenseNx || 0) - (employee.medicalExpense || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      },
+      {
+        benefitType: 'Medical Inhouse',
+        currentAmount: employee.medicalInhouse || 0,
+        nextAmount: employee.medicalInhouseNx || 0,
+        difference: (employee.medicalInhouseNx || 0) - (employee.medicalInhouse || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      },
+      {
+        benefitType: 'Training',
+        currentAmount: employee.training || 0,
+        nextAmount: employee.trainingNx || 0,
+        difference: (employee.trainingNx || 0) - (employee.training || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      },
+      {
+        benefitType: 'Long Service',
+        currentAmount: employee.longService || 0,
+        nextAmount: employee.longServiceNx || 0,
+        difference: (employee.longServiceNx || 0) - (employee.longService || 0),
+        peSbMth: employee.peSbMth || 0,
+        peSbLe: employee.peSbLe || 0
+      }
+    ];
+
+    // Filter out benefits with zero values for cleaner view
+    return benefits.filter(benefit =>
+      benefit.currentAmount > 0 || benefit.nextAmount > 0 ||
+      benefit.peSbMth > 0 || benefit.peSbLe > 0
+    );
+  }
+
+  // Handle Master Grid Selection Change
+  function onMasterSelectionChanged() {
+    const selectedNodes = masterGridApi.getSelectedNodes();
+    if (selectedNodes.length > 0) {
+      const selectedCostCenter = selectedNodes[0].data;
+      updateDetailGrid(selectedCostCenter.costCenterCode, selectedCostCenter.costCenterName);
+    } else {
+      detailGridApi.updateGridOptions({ rowData: [] });
+      document.getElementById('selectedCostCenter').textContent = '';
+
+      // Hide benefits offcanvas when no cost center selected
+      if (benefitsOffcanvas) {
+        benefitsOffcanvas.hide();
+      }
+      document.getElementById('selectedEmployee').textContent = '';
+    }
+  }
+  function updateDetailGrid(costCenterCode, costCenterName) {
+    const filteredEmployees = allData.filter(emp => emp.costCenterCode === costCenterCode);
+    detailGridApi.updateGridOptions({ rowData: filteredEmployees });
+    document.getElementById('selectedCostCenter').textContent = `- ${costCenterName} (${filteredEmployees.length} employees)`;
+  }
+
+  // Process data to create master summary
+  function createMasterData(data) {
+    const costCenterMap = new Map();
+
+    data.forEach(employee => {
+      const key = employee.costCenterCode;
+      if (!costCenterMap.has(key)) {
+        costCenterMap.set(key, {
+          costCenterCode: employee.costCenterCode,
+          costCenterName: employee.costCenterName,
+          employeeCount: 0,
+          activeCount: 0,
+          vacantCount: 0,
+          newCount: 0,
+          onProgressCount: 0
+        });
+      }
+
+      const costCenter = costCenterMap.get(key);
+      costCenter.employeeCount++;
+
+      // Count by employee status
+      const empStatus = (employee.empStatus || '').toLowerCase();
+      console.log(`Employee ${employee.empCode} status: ${empStatus}`);
+      if (empStatus === 'active') {
+        costCenter.activeCount++;
+      } else if (empStatus === 'vacancy') {
+        costCenter.vacantCount++;
+      } else if (empStatus === 'new join') {
+        costCenter.newCount++;
+      } else if (empStatus === 'on process') {
+        costCenter.onProgressCount++;
+      }
+    });
+
+    return Array.from(costCenterMap.values()).sort((a, b) => a.costCenterCode.localeCompare(b.costCenterCode));
+  }
+
+  // Load Budget Data Function
+  async function loadBudgetData() {
+    const btn = document.getElementById('btnLoadData');
+
+    // Show loading state
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
+    }
+
+    try {
+      rowCounter = 0; // Reset counter
+
+      const companyId = document.getElementById('companyFilter')?.value || '2';
+      const empFormat = 'HO';
+      const budgetYear = '2026';
+
+      const url = `/api/Budget/B0Budgets?companyID=${companyId}&empFormat=${empFormat}&budgetYear=${budgetYear}`;
+      console.log('Fetching from:', url);
+
+      const response = await fetch(url, {
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log('Data received:', data);
+
+      // Store all data for filtering
+      allData = data || [];
+
+      // Create master summary data
+      const masterData = createMasterData(allData);
+
+      // Update both grids
+      masterGridApi.updateGridOptions({ rowData: masterData });
+      detailGridApi.updateGridOptions({ rowData: [] }); // Clear detail grid
+
+      // Clear selected cost center text
+      document.getElementById('selectedCostCenter').textContent = allData.length > 0 ? `(Total: ${allData.length} employees)` : '';
+
+      console.log(`Loaded ${masterData.length} cost centers with ${allData.length} total employees`);
+
+    } catch (error) {
+      console.error('Error loading budget data:', error);
+      alert(`Error loading data: ${error.message}`);
+
+      // Clear both grids on error
+      masterGridApi.updateGridOptions({ rowData: [] });
+      detailGridApi.updateGridOptions({ rowData: [] });
+      benefitsGridApi.updateGridOptions({ rowData: [] });
+      allData = [];
+      document.getElementById('selectedCostCenter').textContent = '';
+      document.getElementById('selectedEmployee').textContent = '';
+      if (benefitsOffcanvas) {
+        benefitsOffcanvas.hide();
+      }
+    } finally {
+      // Reset button
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-refresh"></i> Load Budget Data';
+      }
+    }
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Initializing AG Grid Master-Detail...');
+
+    // Create master grid
+    masterGridApi = agGrid.createGrid(document.querySelector('#masterGrid'), masterGridOptions);
+
+    // Create detail grid
+    detailGridApi = agGrid.createGrid(document.querySelector('#detailGrid'), detailGridOptions);
+
+    // Create benefits grid
+    benefitsGridApi = agGrid.createGrid(document.querySelector('#benefitsGrid'), benefitsGridOptions);
+
+    // Initialize benefits offcanvas
+    const benefitsOffcanvasElement = document.getElementById('benefitsOffcanvas');
+    if (benefitsOffcanvasElement) {
+      // Try CoreUI first, then Bootstrap fallback
+      if (window.coreui && window.coreui.Offcanvas) {
+        benefitsOffcanvas = new window.coreui.Offcanvas(benefitsOffcanvasElement);
+      } else if (window.bootstrap && window.bootstrap.Offcanvas) {
+        benefitsOffcanvas = new window.bootstrap.Offcanvas(benefitsOffcanvasElement);
+      }
+    }
+
+    // Event listeners
+    document.getElementById('btnLoadData')?.addEventListener('click', loadBudgetData);
+    document.getElementById('companyFilter')?.addEventListener('change', loadBudgetData);
+
+    // Fullscreen toggle button event listener
+    document.getElementById('btnToggleFullscreen')?.addEventListener('click', toggleFullscreen);
+
+    // Export Excel button event listeners
+    document.getElementById('btnExportExcel')?.addEventListener('click', exportToExcel);
+    document.getElementById('btnExportDetailExcel')?.addEventListener('click', exportDetailToExcel);
+    document.getElementById('btnExportBenefitsExcel')?.addEventListener('click', exportBenefitsToExcel);
+
+    // Listen for fullscreen change events
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+    // ESC key handler for fallback fullscreen
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && isFullscreenActive && !isInNativeFullscreen()) {
+        toggleFullscreen();
+      }
+    });
+
+    // Load initial data
+    await loadBudgetData();
+
+    // Initialize CoreUI Stepper
+    initializeStepper();
+
+    // Initialize Custom Horizontal Stepper
+    initializeCustomStepper();
+  });
+
+  // Custom Horizontal Stepper Functions
+  let currentStep = 1;
+  const totalSteps = 3;
+
+  function initializeCustomStepper() {
+    // Make sure first step is visible
+    document.querySelector('.step-content[data-step="1"]').style.display = 'block';
+
+    // Add click handlers to step indicators (optional)
+    document.querySelectorAll('.stepper-step-horizontal').forEach(stepElement => {
+      stepElement.addEventListener('click', function() {
+        const targetStep = parseInt(this.getAttribute('data-step'));
+        if (targetStep < currentStep) {
+          goToStep(targetStep);
+        }
+      });
+    });
+  }
+
+  function nextStep() {
+    const currentStepContent = document.querySelector(`.step-content[data-step="${currentStep}"]`);
+    const form = currentStepContent.querySelector('.stepper-form');
+
+    if (form && !validateCustomForm(form)) {
+      return; // Don't proceed if validation fails
+    }
+
+    if (currentStep < totalSteps) {
+      // Mark current step as completed
+      const currentStepElement = document.querySelector(`.stepper-step-horizontal[data-step="${currentStep}"]`);
+      currentStepElement.classList.remove('active');
+      currentStepElement.classList.add('completed');
+
+      // Hide current content
+      currentStepContent.style.display = 'none';
+
+      // Move to next step
+      currentStep++;
+
+      // Show next content
+      const nextStepContent = document.querySelector(`.step-content[data-step="${currentStep}"]`);
+      nextStepContent.style.display = 'block';
+
+      // Mark next step as active
+      const nextStepElement = document.querySelector(`.stepper-step-horizontal[data-step="${currentStep}"]`);
+      nextStepElement.classList.add('active');
+    }
+  }
+
+  function prevStep() {
+    if (currentStep > 1) {
+      // Hide current content
+      const currentStepContent = document.querySelector(`.step-content[data-step="${currentStep}"]`);
+      currentStepContent.style.display = 'none';
+
+      // Remove active from current step
+      const currentStepElement = document.querySelector(`.stepper-step-horizontal[data-step="${currentStep}"]`);
+      currentStepElement.classList.remove('active');
+
+      // Move to previous step
+      currentStep--;
+
+      // Show previous content
+      const prevStepContent = document.querySelector(`.step-content[data-step="${currentStep}"]`);
+      prevStepContent.style.display = 'block';
+
+      // Mark previous step as active and remove completed
+      const prevStepElement = document.querySelector(`.stepper-step-horizontal[data-step="${currentStep}"]`);
+      prevStepElement.classList.add('active');
+      prevStepElement.classList.remove('completed');
+    }
+  }
+
+  function goToStep(targetStep) {
+    if (targetStep >= 1 && targetStep <= totalSteps && targetStep !== currentStep) {
+      // Hide current content
+      document.querySelector(`.step-content[data-step="${currentStep}"]`).style.display = 'none';
+
+      // Remove active from current step
+      document.querySelector(`.stepper-step-horizontal[data-step="${currentStep}"]`).classList.remove('active');
+
+      // Update current step
+      currentStep = targetStep;
+
+      // Show target content
+      document.querySelector(`.step-content[data-step="${currentStep}"]`).style.display = 'block';
+
+      // Mark target step as active
+      document.querySelector(`.stepper-step-horizontal[data-step="${currentStep}"]`).classList.add('active');
+    }
+  }
+
+  function finishStepper() {
+    const currentStepContent = document.querySelector(`.step-content[data-step="${currentStep}"]`);
+    const form = currentStepContent.querySelector('.stepper-form');
+
+    if (form && !validateCustomForm(form)) {
+      return; // Don't proceed if validation fails
+    }
+
+    // Mark final step as completed
+    const currentStepElement = document.querySelector(`.stepper-step-horizontal[data-step="${currentStep}"]`);
+    currentStepElement.classList.remove('active');
+    currentStepElement.classList.add('completed');
+
+    // Collect all form data
+    const allFormData = collectAllFormData();
+
+    console.log('Stepper completed with data:', allFormData);
+
+    // Show success message
+    alert('Form completed successfully!\n\nCollected data:\n' + JSON.stringify(allFormData, null, 2));
+
+    // Reset stepper
+    resetCustomStepper();
+  }
+
+  function validateCustomForm(form) {
+    let isValid = true;
+
+    // Remove existing validation classes
+    form.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
+      el.classList.remove('is-invalid', 'is-valid');
+    });
+
+    // Check required fields
+    const requiredFields = form.querySelectorAll('input[required], select[required]');
+    requiredFields.forEach(field => {
+      if (!field.value.trim()) {
+        field.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        // Additional validation for specific field types
+        if (field.type === 'email' && !isValidEmail(field.value)) {
+          field.classList.add('is-invalid');
+          isValid = false;
+        } else {
+          field.classList.add('is-valid');
+        }
+      }
+    });
+
+    // Check checkboxes
+    const requiredCheckboxes = form.querySelectorAll('input[type="checkbox"][required]');
+    requiredCheckboxes.forEach(checkbox => {
+      if (!checkbox.checked) {
+        checkbox.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        checkbox.classList.add('is-valid');
+      }
+    });
+
+    return isValid;
+  }
+
+  function collectAllFormData() {
+    const formData = {};
+
+    // Collect data from all steps
+    document.querySelectorAll('.step-content').forEach(stepContent => {
+      const inputs = stepContent.querySelectorAll('input, select, textarea');
+      inputs.forEach(input => {
+        if (input.id) {
+          if (input.type === 'checkbox') {
+            formData[input.id] = input.checked;
+          } else {
+            formData[input.id] = input.value;
+          }
+        }
+      });
+    });
+
+    return formData;
+  }
+
+  function resetCustomStepper() {
+    // Reset to first step
+    currentStep = 1;
+
+    // Hide all step content
+    document.querySelectorAll('.step-content').forEach(content => {
+      content.style.display = 'none';
+    });
+
+    // Show first step content
+    document.querySelector('.step-content[data-step="1"]').style.display = 'block';
+
+    // Reset step indicators
+    document.querySelectorAll('.stepper-step-horizontal').forEach(step => {
+      step.classList.remove('active', 'completed');
+    });
+
+    // Activate first step
+    document.querySelector('.stepper-step-horizontal[data-step="1"]').classList.add('active');
+
+    // Clear form validation classes
+    document.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
+      el.classList.remove('is-invalid', 'is-valid');
+    });
+
+    // Reset form values (optional)
+    document.querySelectorAll('.stepper-form').forEach(form => {
+      form.reset();
+    });
+  }
+
+  // Make functions globally available
+  window.nextStep = nextStep;
+  window.prevStep = prevStep;
+  window.finishStepper = finishStepper;
+  window.goToStep = goToStep;
+  window.showStepper = showStepper;
+
+  // Stepper Type Selection Function
+  function showStepper(type) {
+    const horizontalContainer = document.getElementById('horizontalStepperContainer');
+    const verticalContainer = document.getElementById('verticalStepperContainer');
+    const horizontalBtn = document.getElementById('btnHorizontalStepper');
+    const verticalBtn = document.getElementById('btnVerticalStepper');
+
+    if (type === 'horizontal') {
+      // Show horizontal stepper
+      horizontalContainer.style.display = 'block';
+      verticalContainer.style.display = 'none';
+
+      // Update button states
+      horizontalBtn.classList.add('active');
+      verticalBtn.classList.remove('active');
+
+      // Reset horizontal stepper
+      resetCustomStepper();
+    } else if (type === 'vertical') {
+      // Show vertical stepper
+      horizontalContainer.style.display = 'none';
+      verticalContainer.style.display = 'block';
+
+      // Update button states
+      horizontalBtn.classList.remove('active');
+      verticalBtn.classList.add('active');
+
+      // Reset vertical stepper
+      resetVerticalStepper();
+    }
+  }
+
+  function resetVerticalStepper() {
+    const verticalStepper = document.querySelector('#verticalStepperContainer .stepper-vertical');
+    if (!verticalStepper) return;
+
+    // Reset to first step
+    const allSteps = verticalStepper.querySelectorAll('.stepper-step');
+    const allButtons = verticalStepper.querySelectorAll('.stepper-step-button');
+    const allContents = verticalStepper.querySelectorAll('.stepper-step-content');
+
+    // Remove active and completed from all steps
+    allSteps.forEach(step => step.classList.remove('completed'));
+    allButtons.forEach(btn => btn.classList.remove('active'));
+
+    // Activate first step
+    if (allButtons[0]) {
+      allButtons[0].classList.add('active');
+    }
+
+    // Clear validation classes
+    verticalStepper.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
+      el.classList.remove('is-invalid', 'is-valid');
+    });
+
+    // Reset forms
+    verticalStepper.querySelectorAll('form').forEach(form => {
+      form.reset();
+      // Restore default values
+      const vFirstName = form.querySelector('#vFirstName');
+      const vLastName = form.querySelector('#vLastName');
+      if (vFirstName) vFirstName.value = 'Łukasz';
+      if (vLastName) vLastName.value = 'Holeczek';
+    });
+  }
+
+  // Enhanced vertical stepper functions
+  function markVerticalStepCompleted(stepIndex) {
+    const verticalStepper = document.querySelector('#verticalStepperContainer .stepper-vertical');
+    if (!verticalStepper) return;
+
+    const steps = verticalStepper.querySelectorAll('.stepper-step');
+    if (steps[stepIndex]) {
+      steps[stepIndex].classList.add('completed');
+    }
+  }
+
+  function removeVerticalStepCompleted(stepIndex) {
+    const verticalStepper = document.querySelector('#verticalStepperContainer .stepper-vertical');
+    if (!verticalStepper) return;
+
+    const steps = verticalStepper.querySelectorAll('.stepper-step');
+    if (steps[stepIndex]) {
+      steps[stepIndex].classList.remove('completed');
+    }
+  }
+
+  // CoreUI Stepper Initialization and Management
+  function initializeStepper() {
+    const stepperElement = document.querySelector('[data-coreui-toggle="stepper"]');
+    if (!stepperElement) return;
+
+    // Initialize CoreUI Stepper
+    let stepper;
+    if (window.coreui && window.coreui.Stepper) {
+      stepper = new window.coreui.Stepper(stepperElement);
+    }
+
+    // Handle form validation for each step
+    const forms = stepperElement.querySelectorAll('form');
+
+    // Custom next/previous button handlers
+    const nextButtons = stepperElement.querySelectorAll('[data-coreui-stepper-action="next"]');
+    const prevButtons = stepperElement.querySelectorAll('[data-coreui-stepper-action="prev"]');
+    const finishButton = stepperElement.querySelector('[data-coreui-stepper-action="finish"]');
+
+    // Add event listeners for next buttons
+    nextButtons.forEach((button, index) => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        // Find the form in the current step
+        const currentStep = button.closest('.stepper-step');
+        const form = currentStep.querySelector('form');
+
+        if (form && !validateForm(form)) {
+          return; // Don't proceed if validation fails
+        }
+
+        // Mark current step as completed
+        const stepIndex = Array.from(stepperElement.querySelectorAll('.stepper-step')).indexOf(currentStep);
+        markVerticalStepCompleted(stepIndex);
+
+        // Move to next step
+        if (stepper) {
+          stepper.next();
+        } else {
+          // Fallback for manual stepper control
+          goToNextStep();
+        }
+      });
+    });
+
+    // Add event listeners for previous buttons
+    prevButtons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        // Find current step and remove completed status from next step
+        const currentStep = button.closest('.stepper-step');
+        const stepIndex = Array.from(stepperElement.querySelectorAll('.stepper-step')).indexOf(currentStep);
+        if (stepIndex < stepperElement.querySelectorAll('.stepper-step').length - 1) {
+          removeVerticalStepCompleted(stepIndex + 1);
+        }
+
+        if (stepper) {
+          stepper.previous();
+        } else {
+          // Fallback for manual stepper control
+          goToPreviousStep();
+        }
+      });
+    });
+
+    // Add event listener for finish button
+    if (finishButton) {
+      finishButton.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        // Find the form in the current step
+        const currentStep = finishButton.closest('.stepper-step');
+        const form = currentStep.querySelector('form');
+
+        if (form && !validateForm(form)) {
+          return; // Don't proceed if validation fails
+        }
+
+        // Mark final step as completed
+        const stepIndex = Array.from(stepperElement.querySelectorAll('.stepper-step')).indexOf(currentStep);
+        markVerticalStepCompleted(stepIndex);
+
+        // Handle finish action
+        handleStepperFinish();
+      });
+    }
+  }
+
+  // Form validation function
+  function validateForm(form) {
+    let isValid = true;
+
+    // Remove existing validation classes
+    form.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
+      el.classList.remove('is-invalid', 'is-valid');
+    });
+
+    // Check required fields
+    const requiredFields = form.querySelectorAll('input[required], select[required]');
+    requiredFields.forEach(field => {
+      if (!field.value.trim()) {
+        field.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        field.classList.add('is-valid');
+      }
+    });
+
+    // Additional validation rules
+    const emailFields = form.querySelectorAll('input[type="email"]');
+    emailFields.forEach(field => {
+      if (field.value && !isValidEmail(field.value)) {
+        field.classList.add('is-invalid');
+        isValid = false;
+      }
+    });
+
+    return isValid;
+  }
+
+  // Email validation helper
+  function isValidEmail(email) {
+    const emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+    return emailRegex.test(email);
+  }
+
+  // Manual stepper control functions (fallback)
+  function goToNextStep() {
+    const activeStep = document.querySelector('.stepper-step .stepper-step-button.active');
+    if (!activeStep) return;
+
+    const currentStepElement = activeStep.closest('.stepper-step');
+    const nextStepElement = currentStepElement.nextElementSibling;
+
+    if (nextStepElement && nextStepElement.classList.contains('stepper-step')) {
+      // Remove active from current step
+      activeStep.classList.remove('active');
+      currentStepElement.querySelector('.stepper-step-content').style.display = 'none';
+
+      // Add active to next step
+      const nextButton = nextStepElement.querySelector('.stepper-step-button');
+      nextButton.classList.add('active');
+      nextStepElement.querySelector('.stepper-step-content').style.display = 'block';
+    }
+  }
+
+  function goToPreviousStep() {
+    const activeStep = document.querySelector('.stepper-step .stepper-step-button.active');
+    if (!activeStep) return;
+
+    const currentStepElement = activeStep.closest('.stepper-step');
+    const prevStepElement = currentStepElement.previousElementSibling;
+
+    if (prevStepElement && prevStepElement.classList.contains('stepper-step')) {
+      // Remove active from current step
+      activeStep.classList.remove('active');
+      currentStepElement.querySelector('.stepper-step-content').style.display = 'none';
+
+      // Add active to previous step
+      const prevButton = prevStepElement.querySelector('.stepper-step-button');
+      prevButton.classList.add('active');
+      prevStepElement.querySelector('.stepper-step-content').style.display = 'block';
+    }
+  }
+
+  // Handle stepper finish
+  function handleStepperFinish() {
+    // Collect all form data
+    const allForms = document.querySelectorAll('.stepper form');
+    const formData = {};
+
+    allForms.forEach((form, index) => {
+      const inputs = form.querySelectorAll('input, select, textarea');
+      inputs.forEach(input => {
+        if (input.id) {
+          formData[input.id] = input.value;
+        }
+      });
+    });
+
+    console.log('Stepper completed with data:', formData);
+
+    // Show success message
+    alert('Form completed successfully!\n\nCollected data:\n' + JSON.stringify(formData, null, 2));
+
+    // Reset stepper to first step
+    resetStepper();
+  }
+
+  // Reset stepper to first step
+  function resetStepper() {
+    const stepperElement = document.querySelector('[data-coreui-toggle="stepper"]');
+    if (!stepperElement) return;
+
+    // Remove active from all steps
+    stepperElement.querySelectorAll('.stepper-step-button').forEach(button => {
+      button.classList.remove('active');
+    });
+
+    // Hide all step content
+    stepperElement.querySelectorAll('.stepper-step-content').forEach(content => {
+      content.style.display = 'none';
+    });
+
+    // Activate first step
+    const firstStep = stepperElement.querySelector('.stepper-step');
+    if (firstStep) {
+      firstStep.querySelector('.stepper-step-button').classList.add('active');
+      firstStep.querySelector('.stepper-step-content').style.display = 'block';
+    }
+
+    // Clear form validation classes
+    stepperElement.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
+      el.classList.remove('is-invalid', 'is-valid');
+    });
+  }
+</script>

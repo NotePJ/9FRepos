@@ -1,0 +1,1654 @@
+@{
+  ViewData["Title"] = "Head Count Planning";
+}
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="position-fixed top-0 start-0 w-100 h-100 d-none"
+  style="background-color: rgba(0,0,0,0.5); z-index: 9999;">
+  <div class="d-flex justify-content-center align-items-center h-100">
+    <div class="text-center">
+      <button class="btn btn-spiner" type="button" disabled>
+        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        <span role="status">Loading...</span>
+      </button>
+      <div class="text-white" style="display: none;">
+        <span id="loadingText">Loading Budget Data...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h4>@ViewData["Title"]</h4>
+<p>รายละเอียดการวางแผนงบประมาณ</p>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header"><strong>Filters</strong><span class="small ms-1">Search Criteria</span></div>
+      <div class="card-body">
+        <form class="row g-3">
+          <div class="col-md-3">
+            <label for="companyFilter" class="form-label"><b>Company Group</b> <span style="color:red">*</span></label>
+            <div class="position-relative">
+              <select class="form-select" id="companyFilter">
+                <option value="">All Companies Group</option>
+              </select>
+              <div
+                class="spinner-border-core spinner-border-sm text-success position-absolute top-50 end-0 translate-middle-y me-3 d-none"
+                id="companySpinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="yearsFilter" class="form-label"><b>Budget Year</b> <span style="color:red">*</span></label>
+            <div class="position-relative">
+              <select class="form-select" id="yearsFilter">
+                <option value="">All Years</option>
+              </select>
+              <div
+                class="spinner-border-core spinner-border-sm text-success position-absolute top-50 end-0 translate-middle-y me-3 d-none"
+                id="yearSpinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="cobuFilter" class="form-label" id="cobuFilterLabel"><b><span
+                  id="cobuFilterLabelText">COBU/Format</span></b> </label>
+            <div class="position-relative">
+              <select class="form-select" id="cobuFilter">
+                <option value="" id="cobuFilterAllOption">All COBU/Format</option>
+              </select>
+              <div
+                class="spinner-border-core spinner-border-sm text-success position-absolute top-50 end-0 translate-middle-y me-3 d-none"
+                id="formatSpinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3" id="cosFilters">
+            <label for="costcenterFilter" class="form-label"><b>Cost Center</b></label>
+            <select class="form-select" id="costcenterFilter">
+              <option value="">All Cost Centers</option>
+            </select>
+          </div>
+          <!-- Additional Filters Group - Hidden by default -->
+
+
+          <div class="col-md-3" id="divFilters">
+            <label for="divisionFilter" class="form-label"><b>Division</b></label>
+            <select class="form-select" id="divisionFilter">
+              <option value="">All Divisions</option>
+            </select>
+          </div>
+          <div class="col-md-3" id="deptFilters">
+            <label for="departmentFilter" class="form-label"><b>Department</b></label>
+            <select class="form-select" id="departmentFilter">
+              <option value="">All Departments</option>
+            </select>
+          </div>
+          <div class="col-md-3" id="secFilters">
+            <label for="sectionFilter" class="form-label"><b>Section</b></label>
+            <select class="form-select" id="sectionFilter">
+              <option value="">All Sections</option>
+            </select>
+          </div>
+          <div class="col-md-3" id="compstoreFilters">
+            <label for="compstoreFilter" class="form-label"><b><span id="compstoreFilterLabelText">Company/Store
+                  name</span></b></label>
+            <select class="form-select" id="compstoreFilter">
+              <option value="" id="compstoreFilterAllOption">All Company/Store names</option>
+            </select>
+          </div>
+          <div class="col-md-3" id="empstatFilters">
+            <label for="empstatusFilter" class="form-label"><b>Emp Status</b></label>
+            <select class="form-select" id="empstatusFilter">
+              <option value="">All Emp Status</option>
+            </select>
+          </div>
+          <div class="col-md-3" id="posFilters">
+            <label for="positionFilter" class="form-label"><b>Position</b></label>
+            <select class="form-select" id="positionFilter">
+              <option value="">All Positions</option>
+            </select>
+          </div>
+          <div class="col-md-3" id="jbandFilters">
+            <label for="jobbandFilter" class="form-label"><b>Job Band</b></label>
+            <select class="form-select" id="jobbandFilter">
+              <option value="">All Job Bands</option>
+            </select>
+          </div>
+
+          <!-- More Options and Action Buttons - Full Width on Mobile -->
+          <div class="col-md-3 mt-auto">
+            <div
+              class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mt-3">
+              <div class="w-xauto">
+                <a id="moreOptionsToggle" class="more-options-link mt-xauto">
+                  <i class="fas fa-chevron-down me-2"></i>More Options
+                </a>
+                <div class="btn-group mb-xauto" role="group">
+                  <button class="btn btn-secondary" type="button" id="resetBtn">Reset</button>
+                  <button class="btn btn-core" type="button" id="searchBtn">Search</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="callout callout-core">
+  <div class="d-flex">
+    <div class="flex-shrink-0">
+      <svg class="nav-icon nav-icon-xl">
+        <use xlink:href="@Url.Content("~/lib/adcoreui/icons/svg/free.svg")#cil-info"></use>
+      </svg>
+    </div>
+    <div class="px-3">
+      <p class="card-text">Click <b>Add Row</b> to add new rows to the budget table in batch mode.
+        <br>Click <b>Cost Centers Overview</b> to view the cost centers summary and details.
+      </p>
+      <button id="addRowBtn" class="btn btn-core-inverse mb-1" type="button" data-coreui-toggle="collapse"
+        data-coreui-target="#batchEntryCollapse" aria-expanded="false" aria-controls="batchEntryCollapse"
+        data-role="ADMIN,SUPER_USER">
+        <i class="fa-solid fa-plus"></i> Add Row (Batch Entry)
+      </button>
+
+      <!-- ⭐ NEW: Allocation Batch Entry Button (BIGC Only) -->
+      <button id="addAllocationBatchBtn" class="btn btn-core-inverse mb-1 d-none" type="button"
+        data-coreui-toggle="collapse" data-coreui-target="#allocationBatchCollapse" aria-expanded="false"
+        aria-controls="allocationBatchCollapse" data-role="ADMIN,SUPER_USER">
+        <i class="fa-solid fa-layer-group"></i> Add Row (Allocation)
+      </button>
+
+      <button id="toggleMasterGridBtn" class="btn btn-core-inverse mb-1" type="button" data-coreui-toggle="collapse"
+        data-coreui-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+        <i class="fa-solid fa-chart-bar me-2"></i> Cost Centers Overview
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- NEW: Batch Entry Collapse Section -->
+<div class="collapse mt-4" id="batchEntryCollapse">
+  <div class="card shadow">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <div>
+        <strong><i class="fa-solid fa-layer-group me-2"></i>Batch Entry Mode</strong>
+        <small class="text-muted ms-2">Add multiple budget rows simultaneously</small>
+      </div>
+      <div class="d-flex gap-2">
+        <span class="badge bg-info align-content-center" id="batchRowCounter">0 Rows</span>
+        <button type="button" class="btn btn-sm btn-outline-success" id="addBatchRowBtn">
+          <i class="fa-solid fa-plus"></i> เพิ่มแถว
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-danger" id="deleteBatchRowsBtn" disabled>
+          <i class="fa-solid fa-trash"></i> ลบแถวที่เลือก
+        </button>
+      </div>
+    </div>
+    <div class="card-body">
+      <!-- Batch Entry Controls -->
+      <div class="row mb-3">
+        <div class="col-12">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <button type="button" class="btn btn-sm btn-outline-secondary" id="selectAllBatchRowsBtn">
+                <i class="fa-solid fa-check-square"></i> Select All
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-secondary ms-2" id="expandAllBatchRowsBtn">
+                <i class="fa-solid fa-expand-alt"></i> Expand All
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-secondary ms-2" id="collapseAllBatchRowsBtn">
+                <i class="fa-solid fa-compress-alt"></i> Collapse All
+              </button>
+            </div>
+            <div>
+              <button type="button" class="btn btn-secondary me-2" id="cancelBatchEntryBtn">
+                <i class="fa-solid fa-times"></i> ยกเลิก
+              </button>
+              <button type="button" class="btn btn-info me-2" id="validateAllBtn">
+                <i class="fa-solid fa-check-circle"></i> ตรวจสอบทั้งหมด
+              </button>
+              <button type="button" class="btn btn-core" id="saveBatchEntryBtn">
+                <i class="fa-solid fa-save"></i> บันทึกทั้งหมด
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Validation Messages Area -->
+      <div id="batchValidationMessages" class="mb-3">
+        <!-- Dynamic validation messages will appear here -->
+      </div>
+
+      <!-- Batch Entry Accordion -->
+      <div class="accordion" id="batchEntryAccordion">
+        <!-- Dynamic accordion items will be inserted here -->
+        <div class="text-center py-4 text-muted" id="noBatchRowsMessage">
+          <i class="fa-solid fa-inbox fa-2x mb-2"></i>
+          <p>No rows added yet. Click "เพิ่มแถว" to start adding budget entries.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ⭐ NEW: Allocation Batch Entry Collapse (BIGC Company Only) -->
+<div class="collapse mt-4" id="allocationBatchCollapse">
+  <div class="card shadow border-info">
+    <div class="card-header d-flex justify-content-between align-items-center border-info"
+      style="background-color: #e8f4f8;">
+      <div>
+        <strong><i class="fa-solid fa-layer-group me-2 text-info"></i>Allocation Batch Entry Mode (BIGC)</strong>
+        <small class="text-muted ms-2">Add multiple allocation rows with percentage distribution</small>
+      </div>
+      <div class="d-flex gap-2">
+        <span class="badge bg-warning text-dark align-content-center" id="allocationTotalBadge">
+          Total: <span id="allocationTotalPercentage">0</span>%
+        </span>
+        <span class="badge bg-info align-content-center" id="allocationRowCounter">0 Rows</span>
+        <button type="button" class="btn btn-sm btn-outline-success" id="addAllocationRowBtn">
+          <i class="fa-solid fa-plus"></i> เพิ่มแถว Allocation
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-danger" id="deleteAllocationRowsBtn" disabled>
+          <i class="fa-solid fa-trash"></i> ลบแถวที่เลือก
+        </button>
+      </div>
+    </div>
+    <div class="card-body">
+      <!-- Allocation Batch Controls -->
+      <div class="row mb-3">
+        <div class="col-12">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <button type="button" class="btn btn-sm btn-outline-secondary" id="selectAllAllocationRowsBtn">
+                <i class="fa-solid fa-check-square"></i> Select All
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-secondary ms-2" id="expandAllAllocationRowsBtn">
+                <i class="fa-solid fa-expand-alt"></i> Expand All
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-secondary ms-2" id="collapseAllAllocationRowsBtn">
+                <i class="fa-solid fa-compress-alt"></i> Collapse All
+              </button>
+            </div>
+            <div>
+              <button type="button" class="btn btn-outline-primary me-2" id="calAllAllocationBtn">
+                <i class="fa-solid fa-calculator"></i> CAL ทั้งหมด
+              </button>
+              <button type="button" class="btn btn-secondary me-2" id="cancelAllocationBatchBtn">
+                <i class="fa-solid fa-times"></i> ยกเลิก
+              </button>
+              <button type="button" class="btn btn-info me-2" id="validateAllocationBtn">
+                <i class="fa-solid fa-check-circle"></i> ตรวจสอบทั้งหมด
+              </button>
+              <button type="button" class="btn btn-core" id="saveAllocationBatchBtn">
+                <i class="fa-solid fa-save"></i> บันทึกทั้งหมด
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Allocation Validation Messages Area -->
+      <div id="allocationValidationMessages" class="mb-3">
+        <!-- Dynamic validation messages will appear here -->
+      </div>
+
+      <!-- Allocation Batch Accordion -->
+      <div class="accordion" id="allocationBatchAccordion">
+        <!-- Dynamic accordion items will be inserted here -->
+        <div class="text-center py-4 text-muted" id="noAllocationRowsMessage">
+          <i class="fa-solid fa-inbox fa-2x mb-2 text-info"></i>
+          <p>No allocation rows added yet. Click "เพิ่มแถว Allocation" to start.</p>
+          <small class="text-muted">
+            <i class="fa-solid fa-info-circle me-1"></i>
+            Row 1 will be Master (CC: 90066), Row 2+ will be Children with allocation percentage.
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TEMPLATE: Batch Entry Accordion Item (Hidden - Used for Cloning) -->
+<template id="batchEntryRowTemplate">
+  <div class="accordion-item" data-batch-row-id="">
+    <div class="accordion-header">
+      <div class="d-flex align-items-center">
+        <input type="checkbox" class="form-check-input me-3 batch-row-selector" />
+        <button class="accordion-button collapsed flex-grow-1" type="button" data-coreui-toggle="collapse"
+          data-coreui-target="" aria-expanded="false" aria-controls="">
+          <div class="d-flex justify-content-between w-100 me-3">
+            <span class="batch-row-title">
+              <i class="fa-solid fa-user me-2"></i>
+              <strong>Row <span class="batch-row-number">1</span></strong>
+              <small class="text-muted ms-2 batch-row-status">Empty</small>
+            </span>
+            <span class="badge bg-secondary batch-row-badge align-content-center">New</span>
+          </div>
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary ms-2 batch-copy-row-btn-header"
+          title="Copy this row">
+          <i class="fa-solid fa-copy"></i>
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-danger ms-2 delete-batch-row-btn" title="Delete this row">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+    <div class="accordion-collapse collapse" data-coreui-parent="#batchEntryAccordion">
+      <div class="accordion-body">
+
+        <!-- Row Validation Messages -->
+        <div class="batch-row-validation-messages mb-3">
+          <!-- Dynamic validation messages for this row -->
+        </div>
+
+        <!-- Personal Info Section -->
+        <div class="card mb-3 shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Personal Information</strong>
+            <button type="button" class="collapse-toggle-btn" data-coreui-toggle="collapse"
+              data-coreui-target=".personal-info-collapse" aria-expanded="true" aria-controls="">
+              <i class="fa-solid fa-chevron-up collapse-icon"></i>
+            </button>
+          </div>
+          <div class="collapse show personal-info-collapse">
+            <div class="card-body">
+              <form class="batch-row-form">
+                <input type="hidden" class="batch-form-mode" value="add">
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Company</b> <span style="color:red">*</span></label>
+                    <select class="form-select batch-company" name="company">
+                      <option value="">Select Company</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Budget Year</b> <span style="color:red">*</span></label>
+                    <select class="form-select batch-year" name="year">
+                      <option value="">Select Budget Year</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label batch-cobu-label"><b><span
+                          class="batch-cobu-label-text">COBU/Format</span></b> <span style="color:red">*</span></label>
+                    <select class="form-select batch-cobu" name="cobu">
+                      <option value="" class="batch-cobu-all-option">Select COBU/Format</option>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <hr style="margin: 1rem 0;">
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Employee Status</b> <span style="color:red">*</span></label>
+                    <select class="form-select batch-emp-status" name="empStatus">
+                      <option value="">Select Status</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Cost Center</b> <span style="color:red">*</span></label>
+                    <select class="form-select batch-cost-center" name="costCenterCode">
+                      <option value="">Select Cost Center</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Join Date</b></label>
+                    <input type="date" class="form-control batch-join-date" name="joinDate">
+                  </div>
+                  <div class="col-12 mb-3">
+                    <label class="form-label"><b>Remark</b></label>
+                    <textarea class="form-control batch-remark" name="Remark" placeholder="Remark" rows="3"></textarea>
+                  </div>
+                  <div class="col-12">
+                    <hr style="margin: 1rem 0;">
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Division</b> <span style="color:red">*</span></label>
+                    <select class="form-select batch-division" name="division">
+                      <option value="">Select Division</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Department</b></label>
+                    <select class="form-select batch-department" name="department">
+                      <option value="">Select Department</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Section</b></label>
+                    <select class="form-select batch-section" name="section">
+                      <option value="">Select Section</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Company/Store name</b> <span style="color:red">*</span></label>
+                    <select class="form-select batch-compstore" name="compstore">
+                      <option value="">Select Company/Store name</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Position</b> <span style="color:red">*</span></label>
+                    <select class="form-select batch-position" name="position">
+                      <option value="">Select Position</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Job Band</b> <span style="color:red">*</span></label>
+                    <select class="form-select batch-job-band" name="jobBand">
+                      <option value="">Select Job Bands</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Employee Type</b> <span style="color:red">*</span></label>
+                    <select class="form-select batch-emp-type" name="EmpType">
+                      <option value="">Select Employee Type</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>New HC</b> <span style="color:red">*</span></label>
+                    <select class="form-select batch-new-hc" name="NewHcCode">
+                      <option value="">Select New HC</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>New Period</b> <span style="color:red">*</span></label>
+                    <select class="form-select batch-new-period" name="NewVacPeriod">
+                      <option value="">Select New Period</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>New LE Period</b> <span style="color:red">*</span></label>
+                    <select class="form-select batch-new-le-period" name="NewVacLe">
+                      <option value="">Select New LE Period</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>LE No. of Month</b> <span style="color:red">*</span></label>
+                    <select class="form-select batch-le-no-month" name="LeOfMonth">
+                      <option value="">Select LE No. of Month</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>No. of Month</b> <span style="color:red">*</span></label>
+                    <select class="form-select batch-no-month" name="NoOfMonth">
+                      <option value="">Select No. of Month</option>
+                    </select>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grouping Section - Dynamic Head Count System -->
+        <div class="card mb-3 shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Additional Configuration</strong>
+            <div class="d-flex gap-2">
+              <button type="button" class="collapse-toggle-btn me-2" data-coreui-toggle="collapse"
+                data-coreui-target=".grouping-collapse" aria-expanded="true" aria-controls="">
+                <i class="fa-solid fa-chevron-up collapse-icon"></i>
+              </button>
+            </div>
+          </div>
+          <div class="collapse show grouping-collapse">
+            <div class="card-body">
+              <form class="batch-row-group-form">
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>CostCenter <span class="batch-plan-cost-center-year">2026</span></b>
+                      <span style="color:red">*</span></label>
+                    <select class="form-select batch-plan-cost-center" name="PlanCostCenter">
+                      <option value="">Select CostCenter 2026</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Salary Structure</b></label>
+                    <select class="form-select batch-salary-structure" name="SalaryStructure">
+                      <option value="">Select Salary Structure</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Run Rate Group</b></label>
+                    <select class="form-select batch-run-rate-group" name="RunRateGroup">
+                      <option value="">Select Run Rate Group</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Executive/Non-Executive</b></label>
+                    <select class="form-select batch-employee-level" name="EmployeeLevel">
+                      <option value="">Select Executive/Non-Executive</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Focus Headcount</b></label>
+                    <select class="form-select batch-focus-hc" name="FocusHC">
+                      <option value="">Select Focus Headcount</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Focus Personnel Expense</b></label>
+                    <select class="form-select batch-focus-pe" name="FocusPE">
+                      <option value="">Select Focus Personnel Expense</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Join PVF</b> <span style="color:red">*</span></label>
+                    <select class="form-select batch-join-pvf" name="JoinPVF">
+                      <option value="">Select Join PVF</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3"></div>
+                  <div class="col-md-4 mb-3"></div>
+                  <!-- Grouping -->
+                  <div class="col-12 tag-core-hidden">
+                    <hr style="margin: 1rem 0;">
+                    <h6 class="mb-3">
+                      <i class="fa-solid fa-cog me-2 text-secondary"></i>
+                      Grouping
+                    </h6>
+                  </div>
+                  <div class="col-md-4 mb-3 tag-core-hidden">
+                    <label class="form-label"><b>Group</b></label>
+                    <select class="form-select batch-group" name="GroupName">
+                      <option value="">Select Group</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3 tag-core-hidden">
+                    <label class="form-label"><b>Group of Division</b></label>
+                    <select class="form-select batch-group-div" name="GroupLevel1">
+                      <option value="">Select Group of Division</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3 tag-core-hidden">
+                    <label class="form-label"><b>Group of Department</b></label>
+                    <select class="form-select batch-group-dept" name="GroupLevel2">
+                      <option value="">Select Group of Department</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3 tag-core-hidden">
+                    <label class="form-label"><b>HRBP</b></label>
+                    <select class="form-select batch-hrbp" name="HrbpEmpCode">
+                      <option value="">Select HRBP</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3 tag-core-hidden"></div>
+                  <div class="col-md-4 mb-3 tag-core-hidden"></div>
+
+
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- LE Benefits Section -->
+        <div class="card mb-3 shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Payroll & Benefits Records LE <span class="batch-le-benefits-year">2025</span></strong>
+            <button type="button" class="collapse-toggle-btn" data-coreui-toggle="collapse"
+              data-coreui-target=".le-benefits-collapse" aria-expanded="true" aria-controls="">
+              <i class="fa-solid fa-chevron-up collapse-icon"></i>
+            </button>
+          </div>
+          <div class="collapse show le-benefits-collapse">
+            <div class="card-body">
+              <form class="batch-row-le-benefit-form">
+                <div class="row">
+                  <!-- Dynamic LE Benefits fields will be generated here based on baseColumns -->
+                </div>
+              </form>
+
+              <!-- Dynamic LE Benefits Forms สำหรับ Multi Cost Center Allocation -->
+              <div class="batch-dynamic-le-benefits-container d-none">
+                <hr class="my-3 border-secondary">
+                <h6 class="mb-3">
+                  <i class="fa-solid fa-layer-group me-2 text-info"></i>
+                  LE Benefits per Cost Center Allocation
+                </h6>
+                <div class="batch-dynamic-le-benefits-forms">
+                  <!-- Dynamic forms จะถูกสร้างที่นี่ -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Budget Year Benefits Section -->
+        <div class="card mb-3 shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Payroll & Benefits Records <span class="batch-benefits-year">2026</span></strong>
+            <button type="button" class="collapse-toggle-btn" data-coreui-toggle="collapse"
+              data-coreui-target=".bg-benefits-collapse" aria-expanded="true" aria-controls="">
+              <i class="fa-solid fa-chevron-up collapse-icon"></i>
+            </button>
+          </div>
+          <div class="collapse show bg-benefits-collapse">
+            <div class="card-body">
+              <form class="batch-row-bg-benefit-form">
+                <div class="row">
+                  <!-- Dynamic Budget Benefits fields will be generated here based on baseColumns -->
+                </div>
+              </form>
+
+              <!-- Dynamic 2026 Benefits Forms สำหรับ Multi Cost Center Allocation -->
+              <div class="batch-dynamic-bg-benefits-container d-none">
+                <hr class="my-3 border-secondary">
+                <h6 class="mb-3">
+                  <i class="fa-solid fa-layer-group me-2 text-info"></i>
+                  <span class="batch-dynamic-bg-benefits-year">2026</span> Benefits per Cost Center Allocation
+                </h6>
+                <div class="batch-dynamic-bg-benefits-forms">
+                  <!-- Dynamic forms จะถูกสร้างที่นี่ -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row Actions -->
+        <div class="card mb-3 shadow-sm">
+          <div class="card-body text-end">
+            <button type="button" class="btn btn-sm btn-outline-secondary batch-copy-row-btn">
+              <i class="fa-solid fa-copy"></i> Copy Row
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- ⭐ NEW TEMPLATE: Allocation Batch Entry Accordion Item -->
+<template id="allocationBatchRowTemplate">
+  <div class="accordion-item border-info" data-allocation-batch-row-id="">
+    <div class="accordion-header border-info">
+      <div class="d-flex align-items-center">
+        <input type="checkbox" class="form-check-input me-3 allocation-row-selector" />
+        <button class="accordion-button collapsed flex-grow-1" type="button" data-coreui-toggle="collapse"
+          data-coreui-target="" aria-expanded="false" aria-controls="">
+          <div class="d-flex justify-content-between w-100 me-3">
+            <span class="allocation-row-title">
+              <i class="fa-solid fa-layer-group me-2 text-info"></i>
+              <strong>Row <span class="allocation-row-number">1</span></strong>
+              <small class="text-muted ms-2 allocation-row-cc-label">CC: 90066</small>
+              <small class="text-muted ms-2 allocation-row-percentage d-none">(0%)</small>
+            </span>
+            <div class="d-flex gap-2 align-items-center">
+              <span class="badge bg-warning text-dark allocation-row-badge">Master</span>
+            </div>
+          </div>
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-danger ms-2 delete-allocation-row-btn"
+          title="Delete this row">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+    <div class="accordion-collapse collapse" data-coreui-parent="#batchEntryAccordion">
+      <div class="accordion-body">
+
+        <!-- Row Validation Messages -->
+        <div class="allocation-row-validation-messages mb-3">
+          <!-- Dynamic validation messages for this row -->
+        </div>
+
+        <!-- Section 1: Personal Information -->
+        <div class="card mb-3 shadow-sm border-info border-opacity-25">
+          <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #e8f4f8;">
+            <strong><i class="fa-solid fa-user me-2"></i>Personal Information</strong>
+            <button type="button" class="collapse-toggle-btn" data-coreui-toggle="collapse"
+              data-coreui-target=".allocation-personal-info-collapse" aria-expanded="true" aria-controls="">
+              <i class="fa-solid fa-chevron-up collapse-icon"></i>
+            </button>
+          </div>
+          <div class="collapse show allocation-personal-info-collapse">
+            <div class="card-body">
+              <form class="allocation-row-form">
+                <input type="hidden" class="allocation-form-mode" value="add">
+                <div class="row">
+                  <!-- Company, Year, COBU -->
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Company</b> <span style="color:red">*</span></label>
+                    <select class="form-select allocation-company batch-company" name="company">
+                      <option value="">Select Company</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Budget Year</b> <span style="color:red">*</span></label>
+                    <select class="form-select allocation-year batch-year" name="year">
+                      <option value="">Select Budget Year</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label allocation-cobu-label"><b>COBU/Format</b> <span
+                        style="color:red">*</span></label>
+                    <select class="form-select allocation-cobu batch-cobu" name="cobu">
+                      <option value="">Select COBU/Format</option>
+                    </select>
+                  </div>
+
+                  <div class="col-12">
+                    <hr style="margin: 1rem 0;">
+                  </div>
+
+                  <!-- Employee Status, Cost Center, Percentage -->
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Employee Status</b> <span style="color:red">*</span></label>
+                    <select class="form-select allocation-emp-status batch-emp-status" name="empStatus">
+                      <option value="">Select Status</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Cost Center</b> <span style="color:red">*</span></label>
+                    <select class="form-select allocation-cost-center batch-cost-center" name="costCenter">
+                      <option value="">Select Cost Center</option>
+                    </select>
+                  </div>
+
+                  <!-- ⭐ Percentage Field (HIDDEN for Row 1, VISIBLE for Row 2+) -->
+                  <div class="col-md-4 mb-3 allocation-percentage-field d-none">
+                    <label class="form-label"><b>Allocation %</b> <span style="color:red">*</span></label>
+                    <div class="input-group">
+                      <input type="number" class="form-control allocation-percentage" name="allocationPercentage"
+                        min="0" max="100" step="0.01" placeholder="0.00">
+                      <span class="input-group-text">%</span>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Join Date</b></label>
+                    <input type="date" class="form-control allocation-join-date" name="joinDate">
+                  </div>
+
+                  <div class="col-12 mb-3">
+                    <label class="form-label"><b>Remark</b></label>
+                    <textarea class="form-control allocation-remark" name="Remark" placeholder="Remark"
+                      rows="3"></textarea>
+                  </div>
+
+                  <div class="col-12">
+                    <hr style="margin: 1rem 0;">
+                  </div>
+
+                  <!-- Division, Department, Section -->
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Division</b> <span style="color:red">*</span></label>
+                    <select class="form-select allocation-division batch-division" name="division">
+                      <option value="">Select Division</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Department</b></label>
+                    <select class="form-select allocation-department batch-department" name="department">
+                      <option value="">Select Department</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Section</b></label>
+                    <select class="form-select allocation-section batch-section" name="section">
+                      <option value="">Select Section</option>
+                    </select>
+                  </div>
+
+                  <!-- Company/Store, Position, Job Band -->
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Company/Store name</b> <span style="color:red">*</span></label>
+                    <select class="form-select allocation-compstore batch-compstore" name="compstore">
+                      <option value="">Select Company/Store name</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Position</b> <span style="color:red">*</span></label>
+                    <select class="form-select allocation-position batch-position" name="position">
+                      <option value="">Select Position</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Job Band</b> <span style="color:red">*</span></label>
+                    <select class="form-select allocation-job-band batch-job-band" name="jobBand">
+                      <option value="">Select Job Bands</option>
+                    </select>
+                  </div>
+
+                  <!-- Employee Type, New HC, New Period, etc. -->
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Employee Type</b> <span style="color:red">*</span></label>
+                    <select class="form-select allocation-emp-type batch-emp-type" name="EmpType">
+                      <option value="">Select Employee Type</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>New HC</b> <span style="color:red">*</span></label>
+                    <select class="form-select allocation-new-hc batch-new-hc" name="NewHcCode">
+                      <option value="">Select New HC</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>New Period</b> <span style="color:red">*</span></label>
+                    <select class="form-select allocation-new-period batch-new-period" name="NewVacPeriod">
+                      <option value="">Select New Period</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>New LE Period</b> <span style="color:red">*</span></label>
+                    <select class="form-select allocation-new-le-period batch-new-le-period" name="NewVacLe">
+                      <option value="">Select New LE Period</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>LE No. of Month</b> <span style="color:red">*</span></label>
+                    <select class="form-select allocation-le-no-month batch-le-no-month" name="LeOfMonth">
+                      <option value="">Select LE No. of Month</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>No. of Month</b> <span style="color:red">*</span></label>
+                    <select class="form-select allocation-no-month batch-no-month" name="NoOfMonth">
+                      <option value="">Select No. of Month</option>
+                    </select>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Additional Configuration -->
+        <div class="card mb-3 shadow-sm border-info border-opacity-25">
+          <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #e8f4f8;">
+            <strong><i class="fa-solid fa-cog me-2"></i>Additional Configuration</strong>
+            <button type="button" class="collapse-toggle-btn" data-coreui-toggle="collapse"
+              data-coreui-target=".allocation-grouping-collapse" aria-expanded="true" aria-controls="">
+              <i class="fa-solid fa-chevron-up collapse-icon"></i>
+            </button>
+          </div>
+          <div class="collapse show allocation-grouping-collapse">
+            <div class="card-body">
+              <form class="allocation-row-group-form">
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>CostCenter 2026</b> <span style="color:red">*</span></label>
+                    <select class="form-select allocation-plan-cost-center batch-plan-cost-center"
+                      name="PlanCostCenter">
+                      <option value="">Select CostCenter 2026</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Salary Structure</b></label>
+                    <select class="form-select allocation-salary-structure batch-salary-structure"
+                      name="SalaryStructure">
+                      <option value="">Select Salary Structure</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Run Rate Group</b></label>
+                    <select class="form-select allocation-run-rate-group batch-run-rate-group" name="RunRateGroup">
+                      <option value="">Select Run Rate Group</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Executive/Non-Executive</b></label>
+                    <select class="form-select allocation-employee-level batch-employee-level" name="EmployeeLevel">
+                      <option value="">Select Executive/Non-Executive</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Focus Headcount</b></label>
+                    <select class="form-select allocation-focus-hc batch-focus-hc" name="FocusHC">
+                      <option value="">Select Focus Headcount</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Focus Personnel Expense</b></label>
+                    <select class="form-select allocation-focus-pe batch-focus-pe" name="FocusPE">
+                      <option value="">Select Focus Personnel Expense</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Join PVF</b> <span style="color:red">*</span></label>
+                    <select class="form-select allocation-join-pvf batch-join-pvf" name="JoinPVF">
+                      <option value="">Select Join PVF</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label"><b>Bonus Types</b> <span class="text-danger">*</span></label>
+                    <select class="form-select allocation-bonus-type batch-bonus-type" name="bonusType" required>
+                      <option value="">Select Bonus Types</option>
+                    </select>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: LE Benefits (⭐ DYNAMIC - NO CAL BUTTON) -->
+        <div class="card mb-3 shadow-sm border-info border-opacity-25">
+          <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #e8f4f8;">
+            <strong><i class="fa-solid fa-coins me-2"></i>Payroll & Benefits Records LE <span
+                class="allocation-le-benefits-year">2025</span></strong>
+            <button type="button" class="collapse-toggle-btn" data-coreui-toggle="collapse"
+              data-coreui-target=".allocation-le-benefits-collapse" aria-expanded="false" aria-controls="">
+              <i class="fa-solid fa-chevron-down collapse-icon"></i>
+            </button>
+          </div>
+          <div class="collapse allocation-le-benefits-collapse">
+            <div class="card-body">
+              <form class="allocation-row-le-benefit-form">
+                <div class="row">
+                  <!-- ⭐ DYNAMIC GENERATION - Fields will be generated by JavaScript -->
+                  <!-- Called from: generateAllocationBenefitsFields(rowId, 'BIGC', 'LE') -->
+                  <!-- Empty container - will be populated dynamically -->
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: BG Benefits (⭐ DYNAMIC - NO CAL BUTTON) -->
+        <div class="card mb-3 shadow-sm border-info border-opacity-25">
+          <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #e8f4f8;">
+            <strong><i class="fa-solid fa-coins me-2"></i>Payroll & Benefits Records <span
+                class="allocation-benefits-year">2026</span></strong>
+            <button type="button" class="collapse-toggle-btn" data-coreui-toggle="collapse"
+              data-coreui-target=".allocation-bg-benefits-collapse" aria-expanded="false" aria-controls="">
+              <i class="fa-solid fa-chevron-down collapse-icon"></i>
+            </button>
+          </div>
+          <div class="collapse allocation-bg-benefits-collapse">
+            <div class="card-body">
+              <form class="allocation-row-bg-benefit-form">
+                <div class="row">
+                  <!-- ⭐ DYNAMIC GENERATION - Fields will be generated by JavaScript -->
+                  <!-- Called from: generateAllocationBenefitsFields(rowId, 'BIGC', 'BG') -->
+                  <!-- Empty container - will be populated dynamically -->
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</template>
+
+<div class="position-relative mt-4">
+  <div class="grid-container" id="budgetGridContainer">
+    <button type="button" id="btnClearBudgetFilters" class="clear-filter-btn" title="Clear All Filters">
+      <i class="fa-solid fa-filter-circle-xmark"></i>
+    </button>
+    <button type="button" id="btnExportBudgetExcel" class="export-excel-btn" title="Export Budget to Excel">
+      <i class="fa-regular fa-file-excel export-icon"></i>
+    </button>
+    <button class="fullscreen-toggle-btn" id="btnToggleBudgetFullscreen" title="Toggle Fullscreen">
+      <i class="fa-solid fa-expand"></i>
+    </button>
+    <div id="budgetAGGrid" class="ag-theme-alpine" style="height: 500px; width: 100%;"></div>
+    <div id="gridLoadingSpinner" class="position-absolute top-50 start-50 translate-middle d-none">
+      <div class="text-center">
+        <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"
+          style="width: 2rem; height: 2rem;">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="text-muted">Loading grid data...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Row Side Panel (Offcanvas) - Edit Mode Only -->
+<div class="offcanvas offcanvas-end" id="offcanvasEditRow" aria-labelledby="offcanvasEditRowLabel"
+  data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="offcanvas-header">
+    <h6 id="offcanvasEditRowLabel">Edit Budget Row</h6>
+    <button type="button" class="btn-close text-reset" data-coreui-dismiss="offcanvas" aria-label="Close"
+      id="closeOffcanvasBtn"></button>
+  </div>
+  <div class="offcanvas-body">
+    <!-- Personal Info Card -->
+    <div class="card mb-3 shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Personal info</strong>
+        <button type="button" class="collapse-toggle-btn" data-coreui-toggle="collapse"
+          data-coreui-target="#personalInfoCollapse" aria-expanded="false" aria-controls="personalInfoCollapse">
+          <i class="fa-solid fa-chevron-up collapse-icon"></i>
+        </button>
+      </div>
+      <div class="collapse show" id="personalInfoCollapse">
+        <div class="card-body">
+          <form id="editRowForm">
+            <input type="hidden" id="formMode" value="edit">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="editCompany" class="form-label"><b>Company</b> <span style="color:red">*</span></label>
+                <select class="form-select" id="editCompany" name="company">
+                  <option value="">Select Company</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editYear" class="form-label"><b>Budget Year</b> <span style="color:red">*</span></label>
+                <select class="form-select" id="editYear" name="year">
+                  <option value="">Select Budget Year</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editCobu" class="form-label" id="editCobuLabel"><b><span
+                      id="editCobuLabelText">COBU/Format</span></b> <span style="color:red">*</span></label>
+                <select class="form-select" id="editCobu" name="cobu">
+                  <option value="" id="editCobuAllOption">Select COBU/Format</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <hr style="margin: 1rem 0;">
+              </div>
+              <!-- Employee Code, Status, Cost Center -->
+              <div class="col-md-4 mb-3">
+                <label for="editEmpCode" class="form-label"><b>Employee Code</b> <span
+                    style="color:red">*</span></label>
+                <input type="text" class="form-control" id="editEmpCode" name="empCode" placeholder="Employee Code">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editEmpStatus" class="form-label"><b>Employee Status</b> <span
+                    style="color:red">*</span></label>
+                <select class="form-select" id="editEmpStatus" name="empStatus">
+                  <option value="">Select Status</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editCostCenter" class="form-label"><b>Cost Center</b> <span
+                    style="color:red">*</span></label>
+                <select class="form-select" id="editCostCenter" name="costCenterCode">
+                  <option value="">Select Cost Center</option>
+                </select>
+              </div>
+              <!-- Display Name TH -->
+              <div class="col-md-4 mb-3">
+                <label for="editTitleTh" class="form-label"><b>Prefix Name (TH)</b></label>
+                <select class="form-select" id="editTitleTh" name="titleTh">
+                  <option value="">Select Prefix Name (TH)</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editFnameTh" class="form-label"><b>First Name (TH)</b></label>
+                <input type="text" class="form-control" id="editFnameTh" name="fnameTh" placeholder="First Name (TH)">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editLnameTh" class="form-label"><b>Last Name (TH)</b></label>
+                <input type="text" class="form-control" id="editLnameTh" name="lnameTh" placeholder="Last Name (TH)">
+              </div>
+              <!-- Display Name EN -->
+              <div class="col-md-4 mb-3">
+                <label for="editTitleEn" class="form-label"><b>Prefix Name (EN)</b></label>
+                <select class="form-select" id="editTitleEn" name="titleEn">
+                  <option value="">Select Prefix Name (EN)</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editFnameEn" class="form-label"><b>First Name (EN)</b></label>
+                <input type="text" class="form-control" id="editFnameEn" name="fnameEn" placeholder="First Name (EN)">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editLnameEn" class="form-label"><b>Last Name (EN)</b></label>
+                <input type="text" class="form-control" id="editLnameEn" name="lnameEn" placeholder="Last Name (EN)">
+              </div>
+              <!-- Join Date, YOS for LE, YOS for Budget, Remark -->
+              <div class="col-md-4 mb-3">
+                <label for="editJoinDate" class="form-label"><b>Join Date</b></label>
+                <input type="date" class="form-control" id="editJoinDate" name="joinDate">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editYosLe" class="form-label"><b>YOS for LE</b></label>
+                <input type="number" class="form-control" id="editYosLe" name="yosLe" placeholder="YOS for LE" min="0" step="1">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editYosBg" class="form-label"><b>YOS for Budget</b></label>
+                <input type="number" class="form-control" id="editYosBg" name="yosBg" placeholder="YOS for Budget" min="0" step="1">
+              </div>
+              <div class="col-12 mb-3">
+                <label for="editRemark" class="form-label"><b>Remark</b></label>
+                <textarea class="form-control" id="editRemark" name="Remark" placeholder="Remark" rows="3"></textarea>
+              </div>
+              <div class="col-12">
+                <hr style="margin: 1rem 0;">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editDivision" class="form-label"><b>Division</b> <span style="color:red">*</span></label>
+                <select class="form-select" id="editDivision" name="division">
+                  <option value="">Select Division</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editDepartment" class="form-label"><b>Department</b> </label>
+                <select class="form-select" id="editDepartment" name="department">
+                  <option value="">Select Department</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editSection" class="form-label"><b>Section</b> </label>
+                <select class="form-select" id="editSection" name="section">
+                  <option value="">Select Section</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editCompstore" class="form-label"><b>Company/Store name</b> <span
+                    style="color:red">*</span></label>
+                <select class="form-select" id="editCompstore" name="compstore">
+                  <option value="">Select Company/Store name</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editPosition" class="form-label"><b>Position</b> <span style="color:red">*</span></label>
+                <select class="form-select" id="editPosition" name="position">
+                  <option value="">Select Position</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editJobBand" class="form-label"><b>Job Band</b> <span style="color:red">*</span></label>
+                <select class="form-select" id="editJobBand" name="jobBand">
+                  <option value="">Select Job Bands</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grouping Card -->
+    <div class="card mb-3 shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Grouping</strong>
+        <button type="button" class="collapse-toggle-btn" data-coreui-toggle="collapse"
+          data-coreui-target="#groupingCollapse" aria-expanded="true" aria-controls="groupingCollapse">
+          <i class="fa-solid fa-chevron-up collapse-icon"></i>
+        </button>
+      </div>
+      <div class="collapse show" id="groupingCollapse">
+        <div class="card-body">
+          <form id="editRowGroupForm">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="editEmpType" class="form-label"><b>Employee Type</b> <span
+                    style="color:red">*</span></label>
+                <select class="form-select" id="editEmpType" name="EmpType">
+                  <option value="">Select Employee Type</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editNewHC" class="form-label"><b>New HC</b> <span style="color:red">*</span></label>
+                <select class="form-select" id="editNewHC" name="newHcCode">
+                  <option value="">Select New HC</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editNewPeriod" class="form-label"><b>New Period</b> <span style="color:red">*</span></label>
+                <select class="form-select" id="editNewPeriod" name="newPeriod">
+                  <option value="">Select New Period</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editNewLEPeriod" class="form-label"><b>New LE Period</b> <span
+                    style="color:red">*</span></label>
+                <select class="form-select" id="editNewLEPeriod" name="newVacLe">
+                  <option value="">Select New LE Period</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editLEnOfMonth" class="form-label"><b>LE No. of Month</b> <span
+                    style="color:red">*</span></label>
+                <select class="form-select" id="editLEnOfMonth" name="leOfMonth">
+                  <option value="">Select LE No. of Month</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editNOfMonth" class="form-label"><b>No. of Month</b> <span
+                    style="color:red">*</span></label>
+                <select class="form-select" id="editNOfMonth" name="noOfMonth">
+                  <option value="">Select No. of Month</option>
+                </select>
+              </div>
+              <div class="col-12 tag-core-hidden">
+                <hr style="margin: 1rem 0;">
+              </div>
+              <div class="col-md-4 mb-3 tag-core-hidden">
+                <label for="editGroup" class="form-label"><b>Group</b></label>
+                <select class="form-select" id="editGroup" name="GroupName">
+                  <option value="">Select Group</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3 tag-core-hidden">
+                <label for="editGroupDiv" class="form-label"><b>Group of Division</b></label>
+                <select class="form-select" id="editGroupDiv" name="GroupLevel1">
+                  <option value="">Select Group of Division</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3 tag-core-hidden">
+                <label for="editGroupDept" class="form-label"><b>Group of Department</b></label>
+                <select class="form-select" id="editGroupDept" name="GroupLevel2">
+                  <option value="">Select Group of Department</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3 tag-core-hidden">
+                <label for="editHRBP" class="form-label"><b>HRBP</b></label>
+                <select class="form-select" id="editHRBP" name="HrbpEmpCode">
+                  <option value="">Select HRBP</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3 tag-core-hidden"></div>
+              <div class="col-md-4 mb-3 tag-core-hidden"></div>
+              <div class="col-12">
+                <hr style="margin: 1rem 0;">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editPlanCostCenter" class="form-label"><b>CostCenter <span
+                      id="planCostCenterYear">2026</span></b> <span style="color:red">*</span></label>
+                <select class="form-select" id="editPlanCostCenter" name="PlanCostCenter">
+                  <option value="">Select CostCenter <span id="planCostCenterYearOption">2026</span></option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editSalaryStructure" class="form-label"><b>Salary Structure</b></label>
+                <select class="form-select" id="editSalaryStructure" name="SalaryStructure">
+                  <option value="">Select Salary Structure</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editRunRateGroup" class="form-label"><b>Run Rate Group</b></label>
+                <select class="form-select" id="editRunRateGroup" name="RunRateGroup">
+                  <option value="">Select Run Rate Group</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editEmployeeLevel" class="form-label"><b>Executive/Non-Executive</b></label>
+                <select class="form-select" id="editEmployeeLevel" name="EmployeeLevel">
+                  <option value="">Select Executive/Non-Executive</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editFocusHC" class="form-label"><b>Focus Headcount</b></label>
+                <select class="form-select" id="editFocusHC" name="FocusHC">
+                  <option value="">Select Focus Headcount</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editFocusPE" class="form-label"><b>Focus Personnel Expense</b></label>
+                <select class="form-select" id="editFocusPE" name="FocusPE">
+                  <option value="">Select Focus Personnel Expense</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Budget Allocation Card -->
+    <div class="card mb-3 shadow-sm d-none" id="budgetAllocationCard">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Allocation</strong>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-sm btn-outline-secondary" id="refreshCostCentersBtn"
+            title="Refresh Cost Centers">
+            <i class="fa-solid fa-refresh"></i> Refresh
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-core" id="addAllocationBtn">
+            <i class="fa-solid fa-plus"></i> Add Cost Center
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <form id="editRowAllocationForm">
+          <div class="row">
+            <div class="col-12 mb-3">
+              <label class="form-label"><b>Cost Center Distribution</b></label>
+              <div id="allocationContainer">
+                <!-- Dynamic allocation rows will be inserted here -->
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="totalAllocation" class="form-label"><b>Total Allocation</b></label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="totalAllocation" readonly>
+                <span class="input-group-text">%</span>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="alert alert-info py-1 allocation-mt" id="allocationStatus">
+                <small>Total must equal 100%</small>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- LE Benefits Card (Dynamic Template) -->
+    <div class="card mb-3 shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Payroll & Benefits Records LE <span id="leBenefitsYear">2024</span> (Oct–Dec)</strong>
+        <button type="button" class="collapse-toggle-btn" data-coreui-toggle="collapse"
+          data-coreui-target="#leBenefitsCollapse" aria-expanded="true" aria-controls="leBenefitsCollapse">
+          <i class="fa-solid fa-chevron-up collapse-icon"></i>
+        </button>
+      </div>
+      <div class="collapse show" id="leBenefitsCollapse">
+        <div class="card-body">
+          <form id="editRowLeBenefitForm">
+            <div class="row">
+              <!-- Dynamic LE Benefits fields will be generated here based on baseColumns -->
+            </div>
+          </form>
+
+          <!-- Dynamic LE Benefits Forms สำหรับ Multi Cost Center Allocation -->
+          <div id="dynamicLeBenefitsContainer" class="d-none">
+            <hr class="my-3 border-secondary">
+            <h6 class="mb-3">
+              <i class="fa-solid fa-layer-group me-2 text-info"></i>
+              LE Benefits per Cost Center Allocation
+            </h6>
+            <div id="dynamicLeBenefitsForms">
+              <!-- Dynamic forms จะถูกสร้างที่นี่ -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Budget year Benefits Card (Dynamic Template) -->
+    <div class="card mb-3 shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Payroll & Benefits Records <span id="benefitsYear">2026</span></strong>
+        <button type="button" class="collapse-toggle-btn" data-coreui-toggle="collapse"
+          data-coreui-target="#bgBenefitsCollapse" aria-expanded="true" aria-controls="bgBenefitsCollapse">
+          <i class="fa-solid fa-chevron-up collapse-icon"></i>
+        </button>
+      </div>
+      <div class="collapse show" id="bgBenefitsCollapse">
+        <div class="card-body">
+          <form id="editRowBgBenefitForm">
+            <div class="row">
+              <!-- Dynamic Budget Benefits fields will be generated here based on baseColumns -->
+            </div>
+          </form>
+
+          <!-- Dynamic 2026 Benefits Forms สำหรับ Multi Cost Center Allocation -->
+          <div id="dynamicBgBenefitsContainer" class="d-none">
+            <hr class="my-3 border-secondary">
+            <h6 class="mb-3">
+              <i class="fa-solid fa-layer-group me-2 text-info"></i>
+              <span id="dynamicBgBenefitsYear">2026</span> Benefits per Cost Center Allocation
+            </h6>
+            <div id="dynamicBgBenefitsForms">
+              <!-- Dynamic forms จะถูกสร้างที่นี่ -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body d-flex justify-content-between align-items-center">
+        <!-- Left side: Delete & Template buttons -->
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-danger btn-sm" id="btnDeleteBudget" title="ลบข้อมูล Budget">
+            <i class="fas fa-trash-alt me-1"></i> Delete
+          </button>
+          <button type="button" class="btn btn-info btn-sm" id="btnUseAsTemplate" title="ใช้ข้อมูลนี้เป็นเทมเพลต">
+            <i class="fas fa-copy me-1"></i> Use as Template
+          </button>
+        </div>
+        <!-- Right side: Cancel, Update, Save buttons -->
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-core-secondary-inverse" id="cancelEditBtn">Cancel</button>
+          <button type="button" class="btn btn-core" id="updateRowBtn">Update</button>
+          <button type="button" class="btn btn-core d-none" id="saveEditBtn">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NEW: Master-Detail-Benefits Grid Implementation -->
+<!-- Master Grid (Top) - Cost Centers -->
+<div class="docs-content mt-4" id="masterGridSection">
+  <div class="collapse" id="collapseExample">
+    <h3 class="mb-3">Cost Centers Overview</h3>
+    <p>Click on a Cost Center to view detailed Employee budget allocations and benefits.</p>
+    <div class="mb-4">
+      <div class="grid-container" id="masterGridContainer">
+        <button type="button" id="btnExportMasterExcel" class="export-excel-btn" title="Export Master to Excel">
+          <i class="fa-regular fa-file-excel export-icon"></i>
+        </button>
+        <button class="fullscreen-toggle-btn" id="btnToggleMasterFullscreen" title="Toggle Fullscreen">
+          <i class="fa-solid fa-expand"></i>
+        </button>
+        <div id="masterGrid" class="ag-theme-alpine" style="height:400px;width:100%;"></div>
+      </div>
+    </div>
+    <!-- Detail Grid (Bottom) - Employees -->
+    <h3 class="mb-3">Employee Details</h3>
+    <p>Click on an Employee to view detailed budget allocations and benefits.</p>
+    <div class="mb-4">
+      <div class="grid-container" id="detailGridContainer">
+        <button type="button" id="btnExportDetailExcel" class="export-excel-btn" title="Export Detail to Excel">
+          <i class="fa-regular fa-file-excel export-icon"></i>
+        </button>
+        <button class="fullscreen-toggle-btn" id="btnToggleDetailFullscreen" title="Toggle Fullscreen">
+          <i class="fa-solid fa-expand"></i>
+        </button>
+        <div id="detailGrid" class="ag-theme-alpine" style="height:500px;width:100%;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Side Panel Benefits (Offcanvas) -->
+<div class="offcanvas offcanvas-end" id="offcanvasBenefits" aria-labelledby="offcanvasBenefitsLabel"
+  data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="offcanvas-header">
+    <h6 class="offcanvas-title" id="offcanvasBenefitsLabel">Benefits Details</h6>
+    <button type="button" class="btn-close text-reset" data-coreui-dismiss="offcanvas" aria-label="Close"
+      id="closeOffcanvasBenefitsBtn"></button>
+  </div>
+  <div class="offcanvas-body">
+    <!-- Content for Benefits Details -->
+    <div id="benefitsGrid" class="ag-theme-alpine" style="height:100%;width:100%;"></div>
+  </div>
+</div>
+
+<!-- Modal Confirm Save All -->
+<div class="modal fade" id="confirmSaveAllModal" tabindex="-1" aria-labelledby="confirmSaveAllModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="d-flex align-items-start">
+          <div class="flex-shrink-0 me-3">
+            <svg class="nav-icon nav-icon-xl text-core">
+              <use xlink:href="@Url.Content("~/lib/adcoreui/icons/svg/free.svg")#cil-save"></use>
+            </svg>
+          </div>
+          <div class="flex-grow-1">
+            <h5 class="mb-2" id="confirmSaveAllModalLabel">Confirm Save</h5>
+            <p class="mb-0 text-muted">Do you want to save this data?</p>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-end">
+        <button type="button" class="btn btn-secondary" id="cancelSaveAllBtn" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-core" id="confirmSaveAllBtn">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Confirm Re-Calculate -->
+<div class="modal fade" id="confirmReCalculateModal" tabindex="-1" aria-labelledby="confirmReCalculateModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="d-flex align-items-start">
+          <div class="flex-shrink-0 me-3">
+            <svg class="nav-icon nav-icon-xl text-warning">
+              <use xlink:href="@Url.Content("~/lib/adcoreui/icons/svg/free.svg")#cil-calculator"></use>
+            </svg>
+          </div>
+          <div class="flex-grow-1">
+            <h5 class="mb-2" id="confirmReCalculateModalLabel">Confirm Re-Calculate</h5>
+            <p class="mb-2 text-muted">
+              คุณได้กรอกข้อมูลเพิ่มเติมในแถวนี้แล้ว การคำนวณใหม่จะทำให้ยอดรวมปรับเปลี่ยน
+            </p>
+            <div class="alert alert-warning mb-0" role="alert">
+              <strong><i class="cil-warning me-2"></i>คำเตือน:</strong>
+              <span id="reCalculateWarningMessage">
+                ข้อมูลที่กรอกเพิ่มเติมบางส่วนอาจถูกแทนที่ด้วยค่าจาก API หากฟิลด์นั้นอยู่ใน allowances/benefits
+              </span>
+            </div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-end">
+        <button type="button" class="btn btn-secondary" id="cancelReCalculateBtn" data-bs-dismiss="modal">
+          <i class="cil-x me-2"></i>Cancel
+        </button>
+        <button type="button" class="btn btn-warning text-white" id="confirmReCalculateBtn">
+          <i class="cil-calculator me-2"></i>Re-Calculate
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Generic Confirmation Modal -->
+<div class="modal fade" id="confirmActionModal" tabindex="-1" aria-labelledby="confirmActionModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="d-flex align-items-start">
+          <div class="flex-shrink-0 me-3">
+            <svg class="nav-icon nav-icon-xl text-secondary">
+              <use xlink:href="@Url.Content("~/lib/adcoreui/icons/svg/free.svg")#cil-question-circle"></use>
+            </svg>
+          </div>
+          <div class="flex-grow-1">
+            <h5 class="mb-2" id="confirmActionModalLabel">Confirm Action</h5>
+            <p class="mb-0 text-muted" id="confirmActionModalMessage">Are you sure you want to proceed?</p>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-end">
+        <button type="button" class="btn btn-secondary" id="cancelActionBtn" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-core" id="confirmActionBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Confirm Save -->
+<div class="modal fade" id="confirmSaveModal" tabindex="-1" aria-labelledby="confirmSaveModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="d-flex align-items-start">
+          <div class="flex-shrink-0 me-3">
+            <svg class="nav-icon nav-icon-xl text-core">
+              <use xlink:href="@Url.Content("~/lib/adcoreui/icons/svg/free.svg")#cil-save"></use>
+            </svg>
+          </div>
+          <div class="flex-grow-1">
+            <h5 class="mb-2" id="confirmSaveModalLabel">Confirm Save</h5>
+            <p class="mb-0 text-muted">Do you want to save this data?</p>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-end">
+        <button type="button" class="btn btn-secondary" id="cancelSaveBtn" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-core" id="confirmSaveBtn">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Confirm Update -->
+<div class="modal fade" id="confirmUpdateModal" tabindex="-1" aria-labelledby="confirmUpdateModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="d-flex align-items-start">
+          <div class="flex-shrink-0 me-3">
+            <svg class="nav-icon nav-icon-xl text-core">
+              <use xlink:href="@Url.Content("~/lib/adcoreui/icons/svg/free.svg")#cil-pencil"></use>
+            </svg>
+          </div>
+          <div class="flex-grow-1">
+            <h5 class="mb-2" id="confirmUpdateModalLabel">Confirm Update</h5>
+            <p class="mb-0 text-muted">Do you want to update this data?</p>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-end">
+        <button type="button" class="btn btn-secondary" id="cancelUpdateBtn" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-core" id="confirmUpdateBtn">Update</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+@section Scripts {
+  <!-- Phase 1: Core files -->
+  <script src="~/lib/razor/js/budget-planning/budget.plan.config.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-planning/budget.plan.core.js" asp-append-version="true"></script>
+
+  <!-- Phase 2: Major modules -->
+  <script src="~/lib/razor/js/budget-planning/budget.plan.api.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-planning/budget.plan.grid.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-planning/budget.plan.filters.js" asp-append-version="true"></script>
+
+  <!-- Phase 3: Dynamic Forms System (NEW) -->
+  <script src="~/lib/razor/js/budget-planning/budget.plan.dynamic.forms.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-planning/budget.plan.form.validation.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-planning/budget.plan.benefits.templates.js" asp-append-version="true"></script>
+
+  <!-- Phase 3.3: Calculation Module (NEW - v2.0) -->
+  <script src="~/lib/razor/js/budget-planning/budget.plan.calculation.js" asp-append-version="true"></script>
+
+  <!-- Phase 4: Event handling and UI modules -->
+  <script src="~/lib/razor/js/budget-planning/budget.plan.events.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-planning/budget.plan.offcanvas.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-planning/budget.plan.offcanvas.fullscreen.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-planning/budget.plan.fullscreen.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-planning/budget.plan.allocation.js" asp-append-version="true"></script>
+  <!-- ⭐ NEW: Allocation Batch Entry Module -->
+  <script src="~/lib/razor/js/budget-planning/budget.plan.allocation.batch.js" asp-append-version="true"></script>
+
+  <!-- ⭐ NEW: Excel Export Modules -->
+  <script src="~/lib/xlsx/exceljs/exceljs.min.js"></script>
+  <script src="~/lib/razor/js/budget-planning/budget.plan.excel.config.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-planning/budget.plan.excel.export.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-planning/budget.plan.excel.handlers.js" asp-append-version="true"></script>
+
+  <!-- Main initialization module -->
+  <script src="~/lib/razor/js/budget-planning/budget.plan.main.js" asp-append-version="true"></script>
+
+  <!-- Options toggle (separate module) -->
+  <script src="~/lib/razor/js/budget-planning/budget.plan.options.js" asp-append-version="true"></script>
+
+
+}

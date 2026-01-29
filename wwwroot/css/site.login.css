@@ -1,0 +1,362 @@
+/* ═══════════════════════════════════════════════════════════════
+       🎨 THEME-AWARE LOGIN STYLES
+       Uses CSS Variables from site.css theme system
+       ═══════════════════════════════════════════════════════════════ */
+
+body {
+  /* Theme-aware gradient background */
+  background: radial-gradient(circle, rgba(215, 255, 153, 1) 0, rgba(119, 255, 157, 1) 100%);
+  /*background: linear-gradient(135deg,
+      var(--theme-bg-secondary, #667eea) 0%,
+      var(--theme-bg-primary, #764ba2) 100%);*/
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Google Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: background 0.3s ease;
+}
+
+/* Dark theme specific gradient */
+[data-coreui-theme="dark"] body {
+  background: linear-gradient(135deg,
+      var(--theme-bg-secondary, #2d3748) 0%,
+      var(--theme-bg-primary, #212529) 100%);
+}
+
+.form--login--box {
+  width: 100%;
+  /*max-width: 430px;*/
+  max-width: 520px;
+  padding: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.login-card {
+  /* background: var(--theme-bg-primary, #ffffff);
+  box-shadow: 0 10px 40px var(--theme-shadow, rgba(0, 0, 0, 0.1));*/
+  border: 1px solid var(--theme-border, #dee2e6);
+  border-radius: 20px;
+  box-shadow: 0 0px 5px var(--theme-shadow, rgba(0, 0, 0, 0.1));
+  padding: 3rem 2rem;
+  transition: all 0.3s ease;
+}
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.logo-container img {
+  max-width: 200px;
+  height: auto;
+  filter: var(--theme-logo-filter, none);
+}
+
+.form-floating input::placeholder {
+  color: white;
+  opacity: 1;
+}
+
+/* Invert logo in dark mode */
+[data-coreui-theme="dark"] .logo-container img {
+  filter: brightness(0.9) contrast(1.1);
+}
+
+.login-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--theme-text-primary, #333);
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.form-floating {
+  margin-bottom: 0;
+}
+
+/* Theme-aware form controls */
+.form-floating input,
+.form-floating select {
+  background-color: var(--theme-bg-primary, #ffffff);
+  color: var(--theme-text-primary, #212529);
+  border-color: var(--theme-border, #ced4da);
+}
+
+.form-floating label {
+  color: var(--theme-text-secondary, #6c757d);
+}
+
+/* Placeholder styling */
+.form-floating input::placeholder {
+  color: white;
+  opacity: 1;
+}
+
+/* Rounded corners for stacked inputs */
+.input-group-top input {
+  border-radius: 10px 10px 0 0 !important;
+  border-bottom: none;
+}
+
+.input-group-bottom input {
+  border-radius: 0 0 10px 10px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+       🔘 TOGGLE BUTTONS - Company Selection
+       ═══════════════════════════════════════════════════════════════ */
+.btn-outline-success {
+  color: #05a34a;
+  border-color: #05a34a;
+  background-color: transparent;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-success:hover {
+  color: #fff;
+  background-color: #05a34a;
+  border-color: #05a34a;
+  transform: translateY(-1px);
+}
+
+.btn-check:checked + .btn-outline-success {
+  color: #fff;
+  background-color: #05a34a;
+  border-color: #05a34a;
+}
+
+.btn-check:focus + .btn-outline-success {
+  box-shadow: 0 0 0 0.25rem rgba(5, 163, 74, 0.25);
+}
+
+.btn-check:disabled + .btn-outline-success,
+.btn-outline-success.disabled {
+  color: var(--theme-text-secondary, #6c757d);
+  background-color: var(--cui-secondary-bg, #e9ecef);
+  border-color: var(--theme-border, #ced4da);
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Dark theme adjustments */
+[data-coreui-theme="dark"] .btn-outline-success {
+  color: #06c258;
+  border-color: #06c258;
+}
+
+[data-coreui-theme="dark"] .btn-outline-success:hover,
+[data-coreui-theme="dark"] .btn-check:checked + .btn-outline-success {
+  color: #212529;
+  background-color: #06c258;
+  border-color: #06c258;
+}
+
+/* Focus state with .btn-core-inverse green color */
+.form-floating input:focus,
+.form-floating select:focus {
+  border-color: #05a34a;
+  box-shadow: 0 0 0 0.25rem rgba(5, 163, 74, 0.25);
+  background-color: var(--theme-bg-primary, #ffffff);
+  color: var(--theme-text-primary, #212529);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+       🔘 LOGIN BUTTON - Uses .btn-core-inverse color scheme
+       Primary color: #05a34a (green)
+       ═══════════════════════════════════════════════════════════════ */
+.btn-login {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 10px;
+
+  /* Apply .btn-core-inverse colors */
+  color: #05a34a;
+  background-color: rgba(5, 163, 74, 0.2);
+  border: 1px solid transparent;
+
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-login:hover {
+  color: #fff;
+  background-color: #05a34a;
+  border-color: #05a34a;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(5, 163, 74, 0.4);
+}
+
+.btn-login:focus {
+  color: #fff;
+  background-color: #05a34a;
+  border-color: #05a34a;
+  box-shadow: 0 0 0 0.2rem rgba(5, 163, 74, 0.25);
+}
+
+.btn-login:active {
+  color: #fff;
+  background-color: #048c3f;
+  border-color: #048c3f;
+  transform: translateY(0);
+}
+
+.btn-login:disabled {
+  color: var(--theme-text-secondary, #6c757d);
+  background-color: var(--cui-secondary-bg, #e9ecef);
+  border-color: transparent;
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.loading-spinner {
+  display: none;
+  margin-right: 8px;
+}
+
+/* Forgot Password Link */
+.forgot-password-link {
+  color: var(--theme-text-secondary, #6c757d);
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.forgot-password-link:hover {
+  color: #05a34a;
+  text-decoration: underline !important;
+}
+
+.forgot-password-link i {
+  font-size: 0.85rem;
+}
+
+.footer-text {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: var(--theme-text-secondary, #6c757d);
+  font-size: 0.875rem;
+}
+
+/* SweetAlert2 theme-aware customization */
+.swal2-popup {
+  border-radius: 15px;
+  background: var(--theme-bg-primary, #ffffff);
+  color: var(--theme-text-primary, #212529);
+}
+
+.swal2-title {
+  color: var(--theme-text-primary, #212529);
+}
+
+.swal2-html-container {
+  color: var(--theme-text-secondary, #6c757d);
+}
+
+/* Dark theme adjustments for select dropdown */
+[data-coreui-theme="dark"] .form-select option {
+  background-color: var(--theme-bg-primary, #212529);
+  color: var(--theme-text-primary, #e2e6ea);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+       🌓 THEME TOGGLE BUTTON
+       ═══════════════════════════════════════════════════════════════ */
+.theme-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+   /* background: var(--theme-bg-primary, #ffffff);
+  border: 1px solid var(--theme-border, #dee2e6);*/
+  background: transparent;
+  border: 1px solid #dee2e6;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.theme-toggle svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: var(--theme-text-primary, #333);
+  transition: all 0.3s ease;
+}
+
+[data-coreui-theme="dark"] .theme-toggle {
+  background: var(--theme-bg-primary, #212529);
+  border-color: var(--theme-border, #495057);
+}
+
+[data-coreui-theme="dark"] .theme-toggle svg {
+  fill: #ffd700;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+       👁️ PASSWORD SHOW/HIDE TOGGLE
+       ═══════════════════════════════════════════════════════════════ */
+.form-floating.input-group-bottom {
+  position: relative;
+}
+
+.form-floating.input-group-bottom input {
+  padding-right: 50px; /* Space for icon */
+}
+
+.passview {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  pointer-events: none; /* Allow clicks through container */
+}
+
+.viewpass {
+  cursor: pointer;
+  padding: 5px;
+  color: var(--theme-text-secondary, #6c757d);
+  transition: all 0.2s ease;
+  pointer-events: auto; /* Enable clicks on button */
+  user-select: none;
+}
+
+.viewpass:hover {
+  color: var(--theme-text-primary, #333);
+  transform: scale(1.1);
+}
+
+.viewpass:active {
+  transform: scale(0.95);
+}
+
+.viewpass i {
+  font-size: 1.1rem;
+  display: block;
+}
+
+/* Dark theme */
+[data-coreui-theme="dark"] .viewpass {
+  color: #adb5bd;
+}
+
+[data-coreui-theme="dark"] .viewpass:hover {
+  color: #e9ecef;
+}

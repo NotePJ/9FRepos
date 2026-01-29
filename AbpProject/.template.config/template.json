@@ -1,0 +1,130 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Your Organization",
+  "classifications": [
+    "Web",
+    "ABP Framework",
+    "Razor Pages",
+    "ASP.NET Core"
+  ],
+  "identity": "AbpProject.RazorPages.Template",
+  "name": "ABP Framework Razor Pages Project",
+  "shortName": "abp-razorpages",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "AbpProject",
+  "preferNameDirectory": true,
+  "primaryOutputs": [
+    {
+      "path": "AbpProject.sln"
+    },
+    {
+      "path": "AbpProject/AbpProject.csproj"
+    }
+  ],
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "exclude": [
+            "**/bin/**",
+            "**/obj/**",
+            "**/.vs/**",
+            "**/.vscode/**",
+            "**/Logs/**",
+            "**/App_Data/**",
+            "**/node_modules/**",
+            "**/*.user",
+            "**/*.suo",
+            "**/*.pfx",
+            "**/DEV_LOGIN_README.md",
+            "**/TROUBLESHOOTING.md",
+            "**/PROJECT_TEMPLATE_GUIDE.md",
+            "**/*.ps1"
+          ]
+        },
+        {
+          "condition": "(!IncludeMigrations)",
+          "exclude": [
+            "**/Migrations/**"
+          ]
+        }
+      ]
+    }
+  ],
+  "symbols": {
+    "ProjectName": {
+      "type": "parameter",
+      "datatype": "string",
+      "replaces": "AbpProject",
+      "defaultValue": "MyProject",
+      "description": "The name of the project"
+    },
+    "DatabaseName": {
+      "type": "parameter",
+      "datatype": "string",
+      "replaces": "AbpProject",
+      "defaultValue": "MyProjectDb",
+      "description": "The name of the database"
+    },
+    "Port": {
+      "type": "parameter",
+      "datatype": "string",
+      "replaces": "44359",
+      "defaultValue": "44360",
+      "description": "The port number for the application"
+    },
+    "CertificatePassPhrase": {
+      "type": "generated",
+      "generator": "guid",
+      "replaces": "b66da2ea-c2aa-44a4-b8c1-5a95593aeee1",
+      "parameters": {
+        "format": "D"
+      }
+    },
+    "IncludeMigrations": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Include existing database migrations"
+    },
+    "UseLocalDb": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Use SQL Server LocalDB for development"
+    },
+    "EnableMultiTenancy": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Enable multi-tenancy feature"
+    }
+  },
+  "postActions": [
+    {
+      "condition": "(!skipRestore)",
+      "description": "Restore NuGet packages required by this project.",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet restore'"
+        }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true
+    },
+    {
+      "condition": "(!skipMigration)",
+      "description": "Run database migrations.",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet run --migrate-database'"
+        }
+      ],
+      "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+      "continueOnError": true
+    }
+  ]
+}

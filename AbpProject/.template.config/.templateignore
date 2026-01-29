@@ -1,0 +1,36 @@
+# Build outputs
+**/bin/
+**/obj/
+**/Logs/
+**/App_Data/
+
+# User-specific files
+**/*.user
+**/*.suo
+**/.vs/
+**/.vscode/
+
+# Database files
+**/*.mdf
+**/*.ldf
+
+# Migrations (optional - uncomment if you want fresh migrations)
+# **/Migrations/
+
+# Certificates
+**/openiddict.pfx
+
+# Node modules
+**/node_modules/
+
+# Documentation files (template-specific)
+**/DEV_LOGIN_README.md
+**/TROUBLESHOOTING.md
+**/PROJECT_TEMPLATE_GUIDE.md
+
+# Scripts
+**/*.ps1
+
+# Git
+.git/
+.gitignore

@@ -1,0 +1,134 @@
+@{
+    ViewData["Title"] = "Access Denied";
+    Layout = null; // ไม่ใช้ Layout เพื่อซ่อน sidebar
+    var noRole = Context.Items["NoRole"] as bool? ?? false;
+}
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - HCBP</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/css/all.min.css" />
+    <!-- Site CSS -->
+    <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
+
+    <style>
+        body {
+            background: radial-gradient(circle, rgba(215, 255, 153, 1) 0, rgba(119, 255, 157, 1) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Google Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .error-card {
+            background: #fff;
+            border-radius: 20px;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 0px 5px rgba(0, 0, 0, 0.1);
+            max-width: 450px;
+            width: 100%;
+            margin: 20px;
+        }
+        .error-icon {
+            width: 100px;
+            height: 100px;
+            background: #fee2e2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+        .error-icon i {
+            font-size: 3rem;
+            color: #dc3545;
+        }
+        .error-code {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #dc3545;
+            margin-bottom: 0.5rem;
+        }
+        .btn-back {
+            border-radius: 10px;
+            padding: 12px 24px;
+        }
+        .btn-home {
+            background-color: #05a34a;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 24px;
+            color: #fff;
+        }
+        .btn-home:hover {
+            background-color: #048a3e;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-card">
+        <div class="card-body text-center p-5">
+            <!-- Error Icon -->
+            <div class="error-icon">
+                <i class="fas fa-ban"></i>
+            </div>
+
+            <!-- Error Code -->
+            <div class="error-code">403</div>
+
+            <!-- Error Message -->
+            <h4 class="text-dark mb-3">Access Denied</h4>
+            <p class="text-muted mb-4">
+                คุณไม่มีสิทธิ์เข้าถึงหน้านี้<br>
+                กรุณาติดต่อผู้ดูแลระบบหากต้องการขอสิทธิ์
+            </p>
+
+            <!-- Action Buttons -->
+            <div class="d-flex flex-column gap-2">
+                @if (noRole)
+                {
+                    <!-- User ไม่มี Role - redirect ไป Login -->
+                    <a href="@Url.Action("Logout", "Auth")" class="btn btn-outline-secondary btn-back">
+                        <i class="fas fa-sign-in-alt me-2"></i>กลับไปหน้า Login
+                    </a>
+                }
+                else
+                {
+                    <!-- User มี Role แต่ไม่มีสิทธิ์หน้านี้ -->
+                    <a href="javascript:history.back()" class="btn btn-outline-secondary btn-back">
+                        <i class="fas fa-arrow-left me-2"></i>ย้อนกลับ
+                    </a>
+                    <a href="/" class="btn btn-home">
+                        <i class="fas fa-home me-2"></i>กลับหน้าหลัก
+                    </a>
+                }
+            </div>
+
+            <!-- User Info -->
+            @if (Context.Session.GetString("EmployeeNo") != null)
+            {
+                <hr class="my-4">
+                <div class="text-muted small">
+                    <p class="mb-1">
+                        <strong>User:</strong> @Context.Session.GetString("EmployeeNo")
+                    </p>
+                    <p class="mb-0">
+                        <strong>Role:</strong> @Context.Session.GetString("UserRole")
+                    </p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

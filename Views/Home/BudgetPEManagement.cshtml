@@ -1,0 +1,383 @@
+@{
+  ViewData["Title"] = "PE B1 Management";
+}
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="position-fixed top-0 start-0 w-100 h-100 d-none"
+  style="background-color: rgba(0,0,0,0.5); z-index: 9999;">
+  <div class="d-flex justify-content-center align-items-center h-100">
+    <div class="text-center">
+      <button class="btn btn-spiner" type="button" disabled>
+        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        <span role="status">Loading...</span>
+      </button>
+      <div class="text-white" style="display: none;">
+        <span id="loadingText">Loading PE Management Data...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h4>@ViewData["Title"]</h4>
+<p>การจัดการงบประมาณ Headcount และ Base+Wage สำหรับ B1 (After Adjustment)</p>
+
+<!-- Filter Card -->
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header"><strong>Filters</strong><span class="small ms-1">Search Criteria</span></div>
+      <div class="card-body">
+        <form class="row g-3" id="peFilterForm">
+          <div class="col-md-2">
+            <label for="companyFilter" class="form-label"><b>Company</b> <span style="color:red">*</span></label>
+            <div class="position-relative">
+              <select class="form-select" id="companyFilter">
+                <option value="">Select Company</option>
+              </select>
+              <div
+                class="spinner-border-core spinner-border-sm text-success position-absolute top-50 end-0 translate-middle-y me-3 d-none"
+                id="companySpinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <label for="yearsFilter" class="form-label"><b>Budget Year</b> <span style="color:red">*</span></label>
+            <div class="position-relative">
+              <select class="form-select" id="yearsFilter">
+                <option value="">Select Year</option>
+              </select>
+              <div
+                class="spinner-border-core spinner-border-sm text-success position-absolute top-50 end-0 translate-middle-y me-3 d-none"
+                id="yearSpinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <label for="monthFilter" class="form-label"><b>Month</b></label>
+            <div class="position-relative">
+              <select class="form-select" id="monthFilter">
+                <option value="">All Months</option>
+              </select>
+              <div
+                class="spinner-border-core spinner-border-sm text-success position-absolute top-50 end-0 translate-middle-y me-3 d-none"
+                id="monthSpinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="costcenterFilter" class="form-label"><b>Cost Center</b></label>
+            <div class="position-relative">
+              <select class="form-select" id="costcenterFilter">
+                <option value="">All Cost Centers</option>
+              </select>
+              <div
+                class="spinner-border-core spinner-border-sm text-success position-absolute top-50 end-0 translate-middle-y me-3 d-none"
+                id="costcenterSpinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <!-- Action Buttons -->
+          <div class="col-md-3 d-flex align-items-end justify-content-end">
+            <div class="btn-group" role="group">
+              <button class="btn btn-secondary" type="button" id="resetBtn">Reset</button>
+              <button class="btn btn-core" type="button" id="searchBtn">Search</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Info Callout -->
+<div class="callout callout-core">
+  <div class="d-flex">
+    <div class="flex-shrink-0">
+      <svg class="nav-icon nav-icon-xl">
+        <use xlink:href="@Url.Content("~/lib/adcoreui/icons/svg/free.svg#cil-info")"></use>
+      </svg>
+    </div>
+    <div class="px-3">
+      <p class="card-text mb-2">
+        <b>สูตรคำนวณ B1:</b> B1 = B0 + Acc.MoveIn + Acc.Additional - Acc.MoveOut - Acc.Cut
+      </p>
+      <p class="card-text mb-0">
+        คลิก <b>Add Movement</b> เพื่อเพิ่ม Transaction (Move In/Out, Additional, Cut)
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- AG Grid Container -->
+<div class="position-relative mt-3">
+  <div class="grid-container" id="peManagementGridContainer">
+    <button type="button" id="btnExportPEManagementExcel" class="export-excel-btn" title="Export to Excel">
+      <i class="fa-regular fa-file-excel export-icon"></i>
+    </button>
+    <button class="fullscreen-toggle-btn" id="btnTogglePEManagementFullscreen" title="Toggle Fullscreen">
+      <i class="fa-solid fa-expand"></i>
+    </button>
+    <div id="peManagementGrid" class="ag-theme-alpine" style="height: 600px; width: 100%;"></div>
+    <div id="gridLoadingSpinner" class="position-absolute top-50 start-50 translate-middle d-none">
+      <div class="text-center">
+        <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"
+          style="width: 2rem; height: 2rem;">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="text-muted">Loading grid data...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Movement Offcanvas (Right Side) -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="peMovementOffcanvas" aria-labelledby="peOffcanvasTitle">
+  <div class="offcanvas-header border-bottom">
+    <div id="peOffcanvasTitle">
+      <h5 class="offcanvas-title mb-1">
+        <i class="fa-solid fa-plus-circle me-2"></i>Add Movement
+      </h5>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <!-- Validation Errors -->
+    <div id="validationErrors"></div>
+
+    <!-- Read-Only Info Card -->
+    <div class="info-card mb-3">
+      <div class="row">
+        <div class="col-6">
+          <div class="info-label">Cost Center</div>
+          <div class="info-value" id="lblCostCenter">-</div>
+        </div>
+        <div class="col-6">
+          <div class="info-label">Company</div>
+          <div class="info-value" id="lblCompany">-</div>
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-6">
+          <div class="info-label">Current B1 HC</div>
+          <div class="info-value text-primary" id="lblCurrentHC">-</div>
+        </div>
+        <div class="col-6">
+          <div class="info-label">Current B1 Base+Wage</div>
+          <div class="info-value text-primary" id="lblCurrentBaseWage">-</div>
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-12">
+          <div class="info-label">Year</div>
+          <div class="info-value" id="lblYear">-</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Movement Type Selection -->
+    <form id="peMovementForm">
+      <div class="mb-3">
+        <label for="ddlMovementType" class="form-label fw-bold">Movement Type <span class="text-danger">*</span></label>
+        <select class="form-select" id="ddlMovementType">
+          <option value="">-- Select Movement Type --</option>
+          <option value="MoveIn" data-icon="fa-solid fa-right-to-bracket" data-color="#198754">Move In (HC เข้ามา)</option>
+          <option value="MoveOut" data-icon="fa-solid fa-right-from-bracket" data-color="#ffc107">Move Out (HC ออกไป)</option>
+          <option value="Additional" data-icon="fa-solid fa-circle-plus" data-color="#6f42c1">Additional (เพิ่ม HC - ต้อง Approved by MGT)</option>
+          <option value="Cut" data-icon="fa-solid fa-scissors" data-color="#dc3545">Cut (ลด HC)</option>
+        </select>
+      </div>
+
+      <div id="lblMovementTypeTitle" class="mb-3"></div>
+
+      <!-- Common Fields Section -->
+      <div id="sectionCommonFields" style="display: none;">
+        <div class="form-section-header">
+          <i class="fa-solid fa-keyboard me-2"></i>Transaction Details
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-6">
+            <label for="txtHC" class="form-label">HC <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" id="txtHC" min="1" placeholder="Enter HC">
+          </div>
+          <div class="col-6">
+            <label for="txtBaseWage" class="form-label">Base+Wage <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" id="txtBaseWage" min="0" step="0.01"
+              placeholder="Enter Base+Wage">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="txtRemark" class="form-label">Remark</label>
+          <textarea class="form-control" id="txtRemark" rows="2" placeholder="Enter remark (optional)"></textarea>
+        </div>
+      </div>
+
+      <!-- Move In Section -->
+      <div id="sectionMoveIn" style="display: none;">
+        <div class="form-section-header">
+          <i class="fa-solid fa-right-to-bracket me-2 text-success"></i>Move In From
+        </div>
+        <div class="mb-3">
+          <label for="ddlFromCostCenter" class="form-label">From Cost Center <span class="text-danger">*</span></label>
+          <select class="form-select" id="ddlFromCostCenter">
+            <option value="">-- Select Cost Center --</option>
+          </select>
+          <small class="text-muted">Cost Center ที่ย้าย HC มาจาก</small>
+        </div>
+      </div>
+
+      <!-- Move Out Section -->
+      <div id="sectionMoveOut" style="display: none;">
+        <div class="form-section-header">
+          <i class="fa-solid fa-right-from-bracket me-2 text-warning"></i>Move Out To
+        </div>
+        <div class="mb-3">
+          <label for="ddlToCostCenter" class="form-label">To Cost Center <span class="text-danger">*</span></label>
+          <select class="form-select" id="ddlToCostCenter">
+            <option value="">-- Select Cost Center --</option>
+          </select>
+          <small class="text-muted">Cost Center ที่จะย้าย HC ไป</small>
+        </div>
+      </div>
+
+      <!-- Additional Section -->
+      <div id="sectionAdditional" style="display: none;">
+        <div class="alert alert-info py-2">
+          <i class="fa-solid fa-circle-info me-2"></i>
+          <strong>Additional</strong> ต้องได้รับอนุมัติจาก Management
+        </div>
+      </div>
+
+      <!-- Cut Section -->
+      <div id="sectionCut" style="display: none;">
+        <div class="alert alert-warning py-2">
+          <i class="fa-solid fa-triangle-exclamation me-2"></i>
+          <strong>Cut</strong> จะลด HC และ Base+Wage ออกจากระบบ
+        </div>
+      </div>
+
+      <!-- File Upload Section (Additional only) -->
+      <div id="sectionFileUpload" style="display: none;">
+        <div class="form-section-header">
+          <i class="fa-solid fa-paperclip me-2"></i>Attachments
+        </div>
+        <div class="mb-3">
+          <label for="fileUpload" class="form-label">Attach Files (Max 4MB each)</label>
+          <input class="form-control" type="file" id="fileUpload" multiple
+            accept=".pdf,.xlsx,.xls,.doc,.docx,.png,.jpg,.jpeg">
+          <small class="text-muted">Supported: PDF, Excel, Word, Images</small>
+        </div>
+        <div id="fileList" class="mb-3">
+          <!-- Uploaded files will appear here -->
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="offcanvas-footer border-top p-3">
+    <div class="d-flex justify-content-end gap-2">
+      <button type="button" class="btn btn-secondary" id="btnCancelMovement">
+        <i class="fa-solid fa-xmark me-1"></i>Cancel
+      </button>
+      <button type="button" class="btn btn-primary" id="btnSaveMovement">
+        <i class="fa-solid fa-check me-1"></i>Save Movement
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Transaction History Offcanvas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="peHistoryOffcanvas" aria-labelledby="peHistoryOffcanvasTitle"
+  style="width: 700px;">
+  <div class="offcanvas-header border-bottom">
+    <h5 class="offcanvas-title" id="peHistoryOffcanvasTitle">
+      <i class="fa-solid fa-clock-rotate-left me-2"></i>Transaction History
+    </h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div id="peHistoryContent">
+      <!-- Transaction history table will appear here -->
+    </div>
+  </div>
+</div>
+
+<!-- PE Message Modal -->
+<div class="modal fade" id="peMessageModal" tabindex="-1" aria-labelledby="peMessageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="d-flex align-items-start">
+          <i id="peMessageModalIcon" class="fa-solid fa-circle-info fa-2x text-info me-3"></i>
+          <div class="flex-grow-1">
+            <h5 class="mb-2" id="peMessageModalLabel">Message</h5>
+            <p class="mb-0 text-muted" id="peMessageModalBody"></p>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-end">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PE Reject Reason Modal -->
+<div class="modal fade" id="peRejectReasonModal" tabindex="-1" aria-labelledby="peRejectReasonModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="peRejectReasonModalLabel">
+          <i class="fa-solid fa-xmark text-danger me-2"></i>Reject Movement
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="rejectReasonText" class="form-label">เหตุผลในการปฏิเสธ <span class="text-danger">*</span></label>
+          <textarea class="form-control" id="rejectReasonText" rows="3" placeholder="กรุณาระบุเหตุผล..."></textarea>
+          <div class="invalid-feedback" id="rejectReasonError">กรุณาระบุเหตุผลในการปฏิเสธ</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="btnConfirmReject">
+          <i class="fa-solid fa-xmark me-1"></i>Reject
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+@section Scripts {
+  <!-- SweetAlert2 for Toast/Confirm -->
+  <script src="~/lib/sweetalert2/js/sweetalert2.min.js" asp-append-version="true"></script>
+
+  <!-- ExcelJS Library (Required for Excel Export) -->
+  <script src="~/lib/xlsx/exceljs/exceljs.min.js" asp-append-version="true"></script>
+
+  <!-- PE Management Modules -->
+  <!-- 1. Configuration (must load first) -->
+  <script src="~/lib/razor/js/budget-pe-management/budget-pe-management.config.js" asp-append-version="true"></script>
+
+  <!-- 2. Core Utilities -->
+  <script src="~/lib/razor/js/budget-pe-management/budget-pe-management.core.js" asp-append-version="true"></script>
+
+  <!-- 3. API Layer -->
+  <script src="~/lib/razor/js/budget-pe-management/budget-pe-management.api.js" asp-append-version="true"></script>
+
+  <!-- 4. Offcanvas Module -->
+  <script src="~/lib/razor/js/budget-pe-management/budget-pe-management.offcanvas.js" asp-append-version="true"></script>
+
+  <!-- 5. AG Grid Module -->
+  <script src="~/lib/razor/js/budget-pe-management/budget-pe-management.grid.js" asp-append-version="true"></script>
+
+  <!-- 6. Main Initialization -->
+  <script src="~/lib/razor/js/budget-pe-management/budget-pe-management.main.js" asp-append-version="true"></script>
+}

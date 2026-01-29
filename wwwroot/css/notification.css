@@ -1,0 +1,305 @@
+/* ═══════════════════════════════════════════════════════
+   🔔 Notification Bell & Dropdown Styles
+   ═══════════════════════════════════════════════════════ */
+
+/* Badge animation */
+#notificationBadge {
+    animation: pulse 2s infinite;
+    min-width: 16px;
+    height: 16px;
+    line-height: 1;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: translate(-50%, -10%) scale(1);
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+    }
+    50% {
+        transform: translate(-50%, -10%) scale(1.05);
+        box-shadow: 0 0 0 4px rgba(220, 53, 69, 0);
+    }
+}
+
+#notificationBadge.d-none {
+    animation: none;
+}
+
+/* Dropdown styling */
+.notification-dropdown {
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.notification-dropdown .dropdown-header {
+    border-radius: 0;
+}
+
+/* Tabs */
+.notification-tabs .nav-link {
+    color: var(--cui-body-color);
+    border: none;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.notification-tabs .nav-link:hover {
+    border-bottom-color: var(--cui-primary);
+    color: var(--cui-primary);
+}
+
+.notification-tabs .nav-link.active {
+    color: var(--cui-primary);
+    border-bottom-color: var(--cui-primary);
+    background: transparent;
+    font-weight: 500;
+}
+
+/* Notification Items */
+.notification-item {
+    display: flex;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--cui-border-color);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    position: relative;
+    text-decoration: none;
+    color: inherit;
+}
+
+.notification-item:hover {
+    background-color: var(--cui-tertiary-bg);
+    text-decoration: none;
+    color: inherit;
+}
+
+.notification-item.unread {
+    background-color: rgba(var(--cui-primary-rgb), 0.05);
+}
+
+.notification-item.unread::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background-color: var(--cui-primary);
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+/* Icon */
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-right: 0.75rem;
+    font-size: 1rem;
+}
+
+.notification-icon.move-in {
+    background-color: rgba(25, 135, 84, 0.15);
+    color: #198754;
+}
+
+.notification-icon.move-out {
+    background-color: rgba(253, 126, 20, 0.15);
+    color: #fd7e14;
+}
+
+.notification-icon.additional {
+    background-color: rgba(111, 66, 193, 0.15);
+    color: #6f42c1;
+}
+
+.notification-icon.cut {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: #dc3545;
+}
+
+.notification-icon.approved {
+    background-color: rgba(25, 135, 84, 0.15);
+    color: #198754;
+}
+
+.notification-icon.rejected {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: #dc3545;
+}
+
+/* Content */
+.notification-content {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.notification-title {
+    font-weight: 500;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notification-message {
+    font-size: 0.8rem;
+    color: var(--cui-secondary-color);
+    margin-bottom: 0.25rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.notification-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--cui-tertiary-color);
+}
+
+.notification-time {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.notification-attachment {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--cui-info);
+}
+
+/* Badge in tabs */
+.notification-tabs .badge {
+    font-size: 0.65rem;
+    padding: 0.15em 0.4em;
+}
+
+/* Purple color for Additional */
+.bg-purple {
+    background-color: #6f42c1 !important;
+}
+
+/* Scrollbar styling */
+.notification-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notification-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.notification-list::-webkit-scrollbar-thumb {
+    background-color: var(--cui-border-color);
+    border-radius: 3px;
+}
+
+.notification-list::-webkit-scrollbar-thumb:hover {
+    background-color: var(--cui-secondary-color);
+}
+
+/* Dark mode adjustments */
+[data-coreui-theme="dark"] .notification-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-coreui-theme="dark"] .notification-item.unread {
+    background-color: rgba(var(--cui-primary-rgb), 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════
+   📊 AG Grid Approval Row Styles
+   ═══════════════════════════════════════════════════════ */
+
+/* Pending row - Yellow highlight */
+.ag-theme-alpine .row-pending,
+.ag-theme-alpine-dark .row-pending {
+    background-color: rgba(255, 193, 7, 0.1) !important;
+}
+
+.ag-theme-alpine .row-pending:hover,
+.ag-theme-alpine-dark .row-pending:hover {
+    background-color: rgba(255, 193, 7, 0.2) !important;
+}
+
+/* Rejected row - Red strikethrough */
+.ag-theme-alpine .row-rejected,
+.ag-theme-alpine-dark .row-rejected {
+    background-color: rgba(220, 53, 69, 0.08) !important;
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+/* Highlight row (from notification click) */
+.ag-theme-alpine .row-highlight,
+.ag-theme-alpine-dark .row-highlight {
+    animation: rowHighlight 3s ease-out;
+}
+
+@keyframes rowHighlight {
+    0% {
+        background-color: rgba(13, 110, 253, 0.3) !important;
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
+/* Approval Status Badge Styles */
+.approval-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.approval-status-pending {
+    background-color: rgba(255, 193, 7, 0.15);
+    color: #997404;
+}
+
+.approval-status-approved {
+    background-color: rgba(25, 135, 84, 0.15);
+    color: #198754;
+}
+
+.approval-status-rejected {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: #dc3545;
+}
+
+/* Action Buttons in Grid */
+.btn-approve {
+    color: #198754;
+    border-color: #198754;
+}
+
+.btn-approve:hover {
+    background-color: #198754;
+    color: white;
+}
+
+.btn-reject {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-reject:hover {
+    background-color: #dc3545;
+    color: white;
+}

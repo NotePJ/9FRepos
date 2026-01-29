@@ -1,0 +1,131 @@
+@{
+  ViewData["Title"] = "Login";
+  Layout = null;
+  // ใช้ Url.Content("~/") เพื่อรองรับ IIS virtual directory
+  var defaultPath = Url.Content("~/");
+  var path = ViewBag.Path ?? defaultPath;
+  // ถ้า path เป็น "/" ให้ใช้ defaultPath แทน (สำหรับ virtual directory)
+  if (path == "/") path = defaultPath;
+}
+
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"] - HR Budget System</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+  <!-- SweetAlert2 CSS -->
+  <link href="~/lib/sweetalert2/css/sweetalert2.min.css" rel="stylesheet">
+
+  <!-- Main Site CSS (includes theme system and Google Sans font) -->
+  <link href="~/css/all.min.css" rel="stylesheet" asp-append-version="true">
+  <link href="~/css/fonts.min.css" rel="stylesheet" asp-append-version="true">
+  <link href="~/lib/adcoreui/coreui/css/coreui.min.css" rel="stylesheet">
+  <link href="~/css/site.css" rel="stylesheet"  asp-append-version="true" />
+  <link href="~/css/site.login.css" rel="stylesheet" asp-append-version="true">
+</head>
+
+<body>
+  <!-- Theme Toggle Button -->
+  <button type="button" id="themeToggle" class="theme-toggle" title="Toggle Theme" aria-label="Toggle theme">
+    <svg class="icon icon-xl" id="themeIcon">
+      <use id="themeIconUse" href="@Url.Content("~/lib/adcoreui/icons/svg/free.svg")#cil-sun"></use>
+    </svg>
+  </button>
+
+  <div class="form--login--box">
+    <div class="login-card">
+      <!-- Logo -->
+      <div class="logo-container">
+        <img src="~/assets/brand/logo_bjc_bigc.svg" alt="BJC & Big C" />
+      </div>
+
+      <!-- Title -->
+      <h1 class="login-title">HC Budget Planning</h1>
+
+      <!-- Login Form -->
+      <form id="formLogin" autocomplete="off">
+        @Html.AntiForgeryToken()
+
+        <!-- Username Input -->
+        <div class="form-floating input-group-top">
+          <input type="text" class="form-control" id="username" name="username" placeholder=" " required>
+          <label for="username">Employee NO</label>
+        </div>
+
+        <!-- Password Input -->
+        <div class="form-floating input-group-bottom mb-3">
+          <input type="password" class="form-control" id="password" name="password" placeholder="" required>
+          <label for="password">Password</label>
+          <!-- Password Show/Hide Toggle-->
+          <div class="passview">
+            <div class="viewpass" id="viewpass">
+              <i class="fa-solid fa-eye" aria-hidden="true"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Company Selection (Toggle Buttons) -->
+        <div class="btn-group w-100 mb-3" role="group" aria-label="Company selection">
+          <input type="radio" class="btn-check" name="company" id="company_bjc" autocomplete="off" value="bjc" checked>
+          <label class="btn btn-outline-success flex-fill" for="company_bjc">BJC & SUB</label>
+
+          <input type="radio" class="btn-check" name="company" id="company_bigc" autocomplete="off" value="bigc">
+          <label class="btn btn-outline-success flex-fill" for="company_bigc">BIG C</label>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="button" id="submitLogin" class="btn btn-login mt-3">
+          <span class="loading-spinner spinner-border spinner-border-sm" role="status"></span>
+          <span class="button-text">Sign In</span>
+        </button>
+
+        <!-- Forgot Password Link -->
+        <div class="text-center mt-3">
+          <a href="https://ehr.bjc.co.th/account/forgot-password"
+             target="_blank"
+             rel="noopener noreferrer"
+             class="text-decoration-none forgot-password-link">
+            <i class="fa-solid fa-key me-1"></i>ลืมรหัสผ่าน?
+          </a>
+        </div>
+      </form>
+
+      <!-- Footer -->
+      <div class="footer-text">
+        <p class="mb-0">&copy; @DateTime.Now.Year BJC Big C Corporation</p>
+        <small>All rights reserved</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery -->
+  <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- SweetAlert2 JS -->
+  <script src="~/lib/sweetalert2/js/sweetalert2.min.js"></script>
+
+  <!-- Login Configuration -->
+  <script>
+    window.loginConfig = {
+      authUrl: '@Url.Action("Auth", "Auth")',
+      redirectPath: '@Html.Raw(path)',
+      homePath: '@Url.Action("Index", "Home")'
+    };
+  </script>
+
+  <!-- Login Scripts -->
+  <script src="~/lib/razor/js/auth-login/auth-login.theme.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/auth-login/auth-login.ui.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/auth-login/auth-login.event.js" asp-append-version="true"></script>
+</body>
+
+</html>

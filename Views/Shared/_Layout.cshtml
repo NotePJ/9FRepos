@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+@{
+    // SVG icon base path (supports IIS virtual directory)
+    var svgIconPath = Url.Content("~/lib/adcoreui/icons/svg/free.svg");
+}
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"] - HCBP</title>
+  <script type="importmap"></script>
+  <!-- Favicon & PWA -->
+  <link rel="apple-touch-icon" sizes="57x57" href="~/assets/favicon/apple-icon-57x57.png" />
+  <link rel="apple-touch-icon" sizes="60x60" href="~/assets/favicon/apple-icon-60x60.png" />
+  <link rel="manifest" href="~/assets/favicon/manifest.json" />
+
+  <!-- Vendor CSS -->
+  <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+  <!-- AG Grid (Light + Dark) -->
+  <link rel="stylesheet" href="~/lib/ag-grid-community/styles/ag-grid/ag-grid.css" />
+  <link rel="stylesheet" href="~/lib/ag-grid-community/styles/ag-theme-alpine/ag-theme-alpine.css" />
+  <!-- Select2 -->
+  <link rel="stylesheet" href="~/lib/select2/dist/css/select2.min.css" />
+  <!-- front -->
+
+  <link rel="stylesheet" href="~/css/all.min.css" />
+  <link rel="stylesheet" href="~/css/fonts.min.css" />
+  <!-- CoreUI + Simplebar -->
+  <link rel="stylesheet" href="~/lib/simplebar/css/simplebar.css" />
+  <link rel="stylesheet" href="~/css/vendors/simplebar.css" />
+
+   <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-icons.css" />
+
+  <!-- App CSS -->
+  <link href="~/lib/adcoreui/coreui/css/coreui.min.css" rel="stylesheet">
+  <link href="~/css/style.css" rel="stylesheet" />
+  <link href="~/css/examples.css" rel="stylesheet" />
+  <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/css/notification.css" rel="stylesheet" asp-append-version="true" />
+
+
+</head>
+
+<body>
+  <div class="sidebar sidebar-fixed border-end" id="sidebar">
+    <!--sidebar-->
+    <div class="sidebar-header border-bottom">
+      <div class="sidebar-brand d-flex align-items-center gap-1">
+        <img src="~/assets/brand/logo_bjc_bigc.svg" width="88" height="32" alt="BJC BigC" />
+        <span class="fw-semibold line-high logo-name">Budget Planning</span><!--HC -->
+      </div>
+    </div>
+
+    <ul class="sidebar-nav" data-coreui="navigation" data-simplebar>
+      <li class="nav-item">
+        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+          <svg class="nav-icon">
+            <use xlink:href="@svgIconPath#cil-speedometer"></use>
+          </svg>
+          Dashboard
+        </a>
+      </li>
+
+      <li class="nav-title">Budget Management (B0)</li>
+
+      <li class="nav-item">
+        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="BudgetPlanning">
+          <svg class="nav-icon">
+            <use xlink:href="@svgIconPath#cil-spreadsheet"></use>
+          </svg>
+          Head Count Planning
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <!-- FIX: ระบุ controller/action ให้ชัด -->
+        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="BudgetPEBonus">
+          <svg class="nav-icon">
+            <use xlink:href="@svgIconPath#cil-notes"></use>
+          </svg>
+          PE Bonus (By Cost Center)
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <!-- FIX: ระบุ controller/action ให้ชัด -->
+        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="BudgetPEHeadcount">
+          <svg class="nav-icon">
+            <use xlink:href="@svgIconPath#cil-list-rich"></use>
+          </svg>
+          PE Head Count (By Grouping)
+        </a>
+      </li>
+
+      <li class="nav-title">Personnel Expenses (B1)</li>
+
+      <li class="nav-item">
+        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="BudgetPEManagement">
+          <svg class="nav-icon">
+            <use xlink:href="@svgIconPath#cil-chart-pie"></use>
+          </svg>
+          PE Management
+        </a>
+      </li>
+
+      <li class="nav-item d-none">
+        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">
+          <svg class="nav-icon">
+            <use xlink:href="@svgIconPath#cil-pencil"></use>
+          </svg>
+          Privacy
+        </a>
+      </li>
+
+      <li class="nav-title" data-role="ADMIN,SUPER_USER">Settings</li>
+
+      <!-- Master Data Group -->
+      <li class="nav-group" data-role="ADMIN,SUPER_USER">
+        <a class="nav-link nav-group-toggle" href="#">
+          <svg class="nav-icon">
+            <use xlink:href="@svgIconPath#cil-puzzle"></use>
+          </svg>
+          Master Data
+        </a>
+        <ul class="nav-group-items compact">
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage" asp-route-modelName="Company">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Company
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage"
+              asp-route-modelName="CostCenter">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Cost Center
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage"
+              asp-route-modelName="GLAccount">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> GL Account
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage" asp-route-modelName="JobBand">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Job Band
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage"
+              asp-route-modelName="Position">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Position
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage" asp-route-modelName="Status">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Status
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Configuration Group -->
+      <li class="nav-group" data-role="ADMIN,SUPER_USER">
+        <a class="nav-link nav-group-toggle" href="#">
+          <svg class="nav-icon">
+            <use xlink:href="@svgIconPath#cil-settings"></use>
+          </svg>
+          Configuration
+        </a>
+        <ul class="nav-group-items compact">
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage"
+              asp-route-modelName="BudgetRates">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Budget Rates
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage"
+              asp-route-modelName="BudgetBonus">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Budget Bonus
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage"
+              asp-route-modelName="BUSupervisor">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> BU & COBU
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage"
+              asp-route-modelName="FleetCard">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Fleet Card
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage"
+              asp-route-modelName="GroupRunRate">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Group Run Rate
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage" asp-route-modelName="HRBP">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> HRBP
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage"
+              asp-route-modelName="PEAllocation">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> PE Allocation
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage"
+              asp-route-modelName="JobBenefits">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Job Benefits
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage"
+              asp-route-modelName="SalaryRange">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Salary Range
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage"
+              asp-route-modelName="SalaryStructure">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Salary Structure
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage"
+              asp-route-modelName="ItemConfig">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Data Constraints
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Cost Group -->
+      <li class="nav-group" data-role="ADMIN,SUPER_USER">
+        <a class="nav-link nav-group-toggle" href="#">
+          <svg class="nav-icon">
+            <use xlink:href="@svgIconPath#cil-dollar"></use>
+          </svg>
+          Cost
+        </a>
+        <ul class="nav-group-items compact">
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage"
+              asp-route-modelName="CostGroupMapping">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Cost Group Mapping
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage"
+              asp-route-modelName="CostGroupRunRate">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Cost Group Run Rate
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Employee Group -->
+      <li class="nav-group" data-role="ADMIN,SUPER_USER">
+        <a class="nav-link nav-group-toggle" href="#">
+          <svg class="nav-icon">
+            <use xlink:href="@svgIconPath#cil-people"></use>
+          </svg>
+          Employee
+        </a>
+        <ul class="nav-group-items compact">
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage"
+              asp-route-modelName="EmployeeData">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Employee Data
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage"
+              asp-route-modelName="EmployeeExpenseBigC">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Employee Expense (Big C)
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Manage"
+              asp-route-modelName="EmployeeExpenseBJC">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Employee Expense (BJC)
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- System Admin Group (Admin Only) -->
+      <li class="nav-group" data-role="ADMIN,SUPER_USER" id="adminMenuGroup">
+        <a class="nav-link nav-group-toggle" href="#">
+          <svg class="nav-icon">
+            <use xlink:href="@svgIconPath#cil-shield-alt"></use>
+          </svg>
+          System Admin
+        </a>
+        <ul class="nav-group-items compact">
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="UserManagement">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> User Management
+            </a>
+          </li>
+          <li class="nav-item" data-role="ADMIN">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="RoleManagement">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Role Management
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="AuditLogs">
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Audit Logs
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer border-top d-none d-md-flex">
+      <button class="sidebar-toggler" type="button" data-coreui-toggle="unfoldable"></button>
+    </div>
+  </div>
+
+  <div class="wrapper d-flex flex-column min-vh-100">
+    <header class="header header-sticky p-0">
+      <div class="container-fluid border-bottom px-4">
+        <button class="header-toggler" type="button"
+          onclick="coreui.Sidebar.getInstance(document.querySelector('#sidebar')).toggle()"
+          style="margin-inline-start: -14px;">
+          <svg class="icon icon-lg">
+            <use xlink:href="@svgIconPath#cil-menu"></use>
+          </svg>
+        </button>
+
+        <ul class="header-nav ms-auto">
+          <!-- 🔔 Notification Bell -->
+          <li class="nav-item dropdown">
+            <a class="nav-link position-relative" href="#" id="notificationBell"
+               data-coreui-toggle="dropdown" aria-expanded="false">
+              <svg class="icon icon-lg">
+                <use xlink:href="@svgIconPath#cil-bell"></use>
+              </svg>
+              <!-- Badge for unread count -->
+              <span class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill d-none"
+                    id="notificationBadge" style="font-size: 0.6rem; padding: 0.2em 0.45em; transform: translate(-50%, -10%)!important;">
+                0
+              </span>
+            </a>
+
+            <!-- Notification Dropdown -->
+            <div class="dropdown-menu dropdown-menu-end notification-dropdown shadow-lg"
+                 id="notificationDropdown" style="width: 380px; max-height: 480px; padding: 0;">
+
+              <!-- Header -->
+              <div class="dropdown-header d-flex justify-content-between align-items-center py-2 px-3 bg-light border-bottom">
+                <span class="fw-semibold">
+                  <i class="fa-solid fa-bell me-2"></i>Notifications
+                </span>
+                <a href="#" class="text-decoration-none small text-primary" id="markAllReadBtn">
+                  <i class="fa-solid fa-check-double me-1"></i>Mark all read
+                </a>
+              </div>
+
+              <!-- Category Tabs -->
+              <div class="notification-tabs border-bottom bg-white">
+                <ul class="nav nav-tabs nav-tabs-sm border-0 px-2 pt-1" id="notificationTabs">
+                  <li class="nav-item">
+                    <a class="nav-link active py-2 px-3 small" href="#" data-category="ALL">
+                      All
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link py-2 px-3 small" href="#" data-category="PE_MOVEMENT">
+                      <i class="fa-solid fa-right-left me-1"></i>Movement
+                      <span class="badge bg-success rounded-pill ms-1 d-none" id="countMovement">0</span>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link py-2 px-3 small" href="#" data-category="PE_ADDITIONAL">
+                      <i class="fa-solid fa-user-plus me-1"></i>Additional
+                      <span class="badge bg-purple rounded-pill ms-1 d-none" id="countAdditional">0</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Notification List -->
+              <div class="notification-list" id="notificationList" style="max-height: 320px; overflow-y: auto;">
+                <!-- Loading state -->
+                <div class="text-center py-4" id="notificationLoading">
+                  <div class="spinner-border spinner-border-sm text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+                <!-- Empty state -->
+                <div class="text-center py-4 text-muted d-none" id="notificationEmpty">
+                  <i class="fa-regular fa-bell-slash fa-2x mb-2 opacity-50"></i>
+                  <p class="mb-0 small">No notifications</p>
+                </div>
+                <!-- Items will be rendered here -->
+              </div>
+
+              <!-- Footer -->
+              <div class="dropdown-footer border-top p-2 bg-light">
+                <a href="/Home/Notifications" class="btn btn-sm btn-outline-primary w-100">
+                  <i class="fa-solid fa-list me-1"></i>View All Notifications
+                </a>
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <ul class="header-nav">
+          <li class="nav-item py-1">
+            <div class="vr h-100 mx-2 text-body text-opacity-75"></div>
+          </li>
+
+          <!-- Theme Switcher -->
+          <li class="nav-item dropdown">
+            <button class="btn btn-link nav-link py-2 px-2 d-flex align-items-center" type="button"
+              aria-expanded="false" data-coreui-toggle="dropdown">
+              <svg class="icon icon-lg theme-icon-active">
+                <use xlink:href="@svgIconPath#cil-contrast"></use>
+              </svg>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" style="--cui-dropdown-min-width: 8rem;">
+              <li>
+                <button class="dropdown-item d-flex align-items-center active" type="button"
+                  data-coreui-theme-value="light">
+                  <svg class="icon icon-lg me-3">
+                    <use xlink:href="@svgIconPath#cil-sun"></use>
+                  </svg>
+                  Light
+                </button>
+              </li>
+              <li>
+                <button class="dropdown-item d-flex align-items-center" type="button" data-coreui-theme-value="dark">
+                  <svg class="icon icon-lg me-3">
+                    <use xlink:href="@svgIconPath#cil-moon"></use>
+                  </svg>
+                  Dark
+                </button>
+              </li>
+              <li>
+                <button class="dropdown-item d-flex align-items-center" type="button" data-coreui-theme-value="auto">
+                  <svg class="icon icon-lg me-3">
+                    <use xlink:href="@svgIconPath#cil-contrast"></use>
+                  </svg>
+                  Auto
+                </button>
+              </li>
+            </ul>
+          </li>
+
+          <li class="nav-item py-1">
+            <div class="vr h-100 mx-2 text-body text-opacity-75"></div>
+          </li>
+
+          <!-- User -->
+          <li class="nav-item dropdown">
+            <button class="nav-link py-0 pe-0" data-coreui-toggle="dropdown" type="button" aria-haspopup="true"
+              aria-expanded="false">
+              <div class="avatar avatar-md bg-primary text-white d-flex align-items-center justify-content-center">
+                <span id="userAvatarInitial">U</span>
+              </div>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end pt-0">
+              <div class="dropdown-header bg-body-tertiary text-body-secondary fw-semibold rounded-top mb-2 py-3">
+                <div class="fw-bold text-dark" id="userDisplayName">Loading...</div>
+                <small class="text-muted" id="userEmployeeNo"></small>
+                <div class="mt-1">
+                  <span class="badge bg-primary" id="userRoleBadge">-</span>
+                  <span class="badge bg-secondary" id="userCompanyBadge">-</span>
+                </div>
+              </div>
+
+              <a class="dropdown-item" href="#" data-role="ADMIN,SUPER_USER" id="menuProfile">
+                <svg class="icon me-2">
+                  <use xlink:href="@svgIconPath#cil-user"></use>
+                </svg> Profile
+              </a>
+              <a class="dropdown-item" href="#" data-role="ADMIN" id="menuSettings">
+                <svg class="icon me-2">
+                  <use xlink:href="@svgIconPath#cil-settings"></use>
+                </svg> Settings
+              </a>
+
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="@Url.Action("Logout", "Auth")" id="menuLogout">
+                <svg class="icon me-2">
+                  <use xlink:href="@svgIconPath#cil-account-logout"></use>
+                </svg> Logout
+              </a>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="container-fluid px-4">
+        <nav aria-label="breadcrumb"></nav>
+      </div>
+    </header>
+
+    <div class="body flex-grow-1 container-core-bg">
+      <div class="p-4"><!--container-lg-->
+        @RenderBody()
+      </div>
+    </div>
+
+    <footer class="footer px-4">
+      <div>
+        <a href="https://coreui.io">CoreUI</a>
+        <a href="https://coreui.io/product/free-bootstrap-admin-template/">Bootstrap Admin Template</a> &copy; 2025
+        creativeLabs.
+      </div>
+      <div class="ms-auto">Powered by&nbsp;<a href="https://coreui.io/bootstrap/docs/">CoreUI UI Components</a></div>
+    </footer>
+  </div>
+
+  <!-- App Config -->
+  <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+  <!-- Global App Base URL Configuration (for IIS Virtual Directory support) -->
+  <script>
+    window.AppConfig = {
+      baseUrl: '@Url.Content("~/")',
+      apiBaseUrl: '@Url.Content("~/api/")'
+    };
+  </script>
+
+  <script src="~/js/config.js"></script>
+  <script src="~/js/color-modes.js" asp-append-version="true"></script>
+
+  <!-- Vendor JS -->
+  <script src="~/lib/adcoreui/coreui/js/coreui.bundle.min.js"></script>
+  <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    if (!window.bootstrap && typeof bootstrap !== 'undefined') {
+      window.bootstrap = bootstrap;
+    }
+  </script>
+  <!--<script src="~/lib/adcoreui/coreui/js/pro/coreui.bundle.min.js"></script>-->
+  <script src="~/lib/simplebar/js/simplebar.min.js"></script>
+  <script src="~/lib/select2/dist/js/select2.min.js"></script>
+
+  <!-- AG Grid -->
+  <script src="~/lib/ag-grid-community/dist/ag-grid-community.min.js"></script>
+
+  <!-- XLSX (ถ้าต้องใช้ Export Excel ฝั่ง client) -->
+  <script src="~/lib/xlsx/dist/xlsx.full.min.js"></script>
+
+  <!-- Chart.js + CoreUI utils -->
+  <script src="~/lib/adcoreui/utils/js/index.js"></script>
+
+  <!-- UX: header shadow on scroll -->
+  <script>
+    (function () {
+      const header = document.querySelector('header.header');
+      document.addEventListener('scroll', () => {
+        if (header) header.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0);
+      });
+    })();
+    //console.log(typeof $);
+    //console.log(typeof $.fn.select2);
+  </script>
+
+  <!-- Sync CoreUI Theme -> AG Grid Theme -->
+  <script>
+    (function () {
+      // สลับธีมให้ทุก grid: ag-theme-alpine <-> ag-theme-alpine-dark
+      function applyAgGridTheme() {
+        const theme = document.documentElement.getAttribute('data-coreui-theme') || 'auto';
+        const isDark = theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.querySelectorAll('.ag-theme-alpine, .ag-theme-alpine-dark').forEach(el => {
+          if (isDark) {
+            el.classList.remove('ag-theme-alpine');
+            el.classList.add('ag-theme-alpine-dark');
+          } else {
+            el.classList.remove('ag-theme-alpine-dark');
+            el.classList.add('ag-theme-alpine');
+          }
+        });
+      }
+
+      // เรียกครั้งแรก
+      applyAgGridTheme();
+
+      // เมื่อผู้ใช้กดปุ่มสลับธีมของ CoreUI
+      document.addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-coreui-theme-value]');
+        if (!btn) return;
+        // CoreUI จะจัดการ data-coreui-theme ให้เองผ่าน color-modes.js
+        // รอสลับค่าแล้วค่อย sync ให้กริด
+        setTimeout(applyAgGridTheme, 0);
+      });
+
+      // ถ้าเป็น Auto และผู้ใช้เปลี่ยน OS theme
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyAgGridTheme);
+    })();
+  </script>
+
+  <script src="~/js/site.js" asp-append-version="true"></script>
+
+  <!-- Permission & Role-based Menu System -->
+  <script src="~/js/helpers/permission-helper.js" asp-append-version="true"></script>
+  <script src="~/js/layout/user-menu.js" asp-append-version="true"></script>
+
+  <!-- Notification System -->
+  <script src="~/js/notification/notification.js" asp-append-version="true"></script>
+
+  @await RenderSectionAsync("Scripts", required: false)
+
+  <script>
+    // Ensure bootstrap is available globally for JS
+    window.bootstrap = window.bootstrap || {};
+    try {
+      if (typeof bootstrap === 'undefined' && window.bootstrap) {
+        window.bootstrap = window.bootstrap;
+      }
+    } catch (e) {
+      // fallback: try to get from window
+      window.bootstrap = window.bootstrap || {};
+    }
+  </script>
+</body>
+
+</html>

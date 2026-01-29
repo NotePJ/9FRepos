@@ -1,0 +1,153 @@
+@{
+  ViewData["Title"] = "PE Head Count Summary By Grouping";
+}
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="position-fixed top-0 start-0 w-100 h-100 d-none"
+  style="background-color: rgba(0,0,0,0.5); z-index: 9999;">
+  <div class="d-flex justify-content-center align-items-center h-100">
+    <div class="text-center">
+      <button class="btn btn-spiner" type="button" disabled>
+        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        <span role="status">Loading...</span>
+      </button>
+      <div class="text-white" style="display: none;">
+        <span id="loadingText">Loading Budget PE Head Count Data...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h4>@ViewData["Title"]</h4>
+<p>รายงานสรุป PE Head Count แยกตาม Grouping</p>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header"><strong>Filters</strong><span class="small ms-1">Search Criteria</span></div>
+      <div class="card-body">
+        <form class="row g-3">
+          <div class="col-md-2">
+            <label for="companyFilter" class="form-label"><b>Company</b> <span style="color:red">*</span></label>
+            <div class="position-relative">
+              <select class="form-select" id="companyFilter">
+                <option value="">Select Company</option>
+              </select>
+              <div
+                class="spinner-border-core spinner-border-sm text-success position-absolute top-50 end-0 translate-middle-y me-3 d-none"
+                id="companySpinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <label for="yearsFilter" class="form-label"><b>Budget Year</b> <span style="color:red">*</span></label>
+            <div class="position-relative">
+              <select class="form-select" id="yearsFilter">
+                <option value="">Select Year</option>
+              </select>
+              <div
+                class="spinner-border-core spinner-border-sm text-success position-absolute top-50 end-0 translate-middle-y me-3 d-none"
+                id="yearSpinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <label for="cobuFilter" class="form-label"><b>COBU/Format</b></label>
+            <div class="position-relative">
+              <select class="form-select" id="cobuFilter">
+                <option value="">All COBU/Format</option>
+              </select>
+              <div
+                class="spinner-border-core spinner-border-sm text-success position-absolute top-50 end-0 translate-middle-y me-3 d-none"
+                id="formatSpinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="costcenterFilter" class="form-label"><b>Cost Center</b></label>
+            <div class="position-relative">
+              <select class="form-select" id="costcenterFilter">
+                <option value="">All Cost Centers</option>
+              </select>
+              <div
+                class="spinner-border-core spinner-border-sm text-success position-absolute top-50 end-0 translate-middle-y me-3 d-none"
+                id="costcenterSpinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <!-- Action Buttons -->
+          <div class="col-md-3 d-flex align-items-end justify-content-end">
+            <div class="btn-group" role="group">
+              <button class="btn btn-secondary" type="button" id="resetBtn">Reset</button>
+              <button class="btn btn-core" type="button" id="searchBtn">Search</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="position-relative">
+  <div class="grid-container" id="budgetPEHeadcountGridContainer">
+    <button type="button" id="btnExportBudgetPEHeadCountExcel" class="export-excel-btn" title="Export to Excel">
+      <i class="fa-regular fa-file-excel export-icon"></i>
+    </button>
+    <button class="fullscreen-toggle-btn" id="btnToggleBudgetPEHeadcountFullscreen" title="Toggle Fullscreen">
+      <i class="fa-solid fa-expand"></i>
+    </button>
+    <div id="budgetPEHeadcountGrid" class="ag-theme-alpine" style="height: 500px; width: 100%;"></div>
+    <div id="gridLoadingSpinner" class="position-absolute top-50 start-50 translate-middle d-none">
+      <div class="text-center">
+        <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"
+          style="width: 2rem; height: 2rem;">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="text-muted">Loading grid data...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+@section Scripts {
+  <!-- ExcelJS Library (Required for Excel Export) -->
+  <script src="~/lib/xlsx/exceljs/exceljs.min.js" asp-append-version="true"></script>
+
+  <!-- Core Configuration -->
+  <script src="~/lib/razor/js/budget-pe-headcount/budget-pe-headcount.config.js" asp-append-version="true"></script>
+
+  <!-- Core Utilities (Required before other modules) -->
+  <script src="~/lib/razor/js/budget-pe-headcount/budget-pe-headcount.core.js" asp-append-version="true"></script>
+
+  <!-- API Layer -->
+  <script src="~/lib/razor/js/budget-pe-headcount/budget-pe-headcount.api.js" asp-append-version="true"></script>
+
+  <!-- Grid Module -->
+  <script src="~/lib/razor/js/budget-pe-headcount/budget-pe-headcount.grid.js" asp-append-version="true"></script>
+
+  <!-- Filters Module -->
+  <script src="~/lib/razor/js/budget-pe-headcount/budget-pe-headcount.filters.js" asp-append-version="true"></script>
+
+  <!-- Form Validation Module (Dropdown Success Icons) -->
+  <script src="~/lib/razor/js/budget-pe-headcount/budget-pe-headcount.form.validation.js" asp-append-version="true"></script>
+
+  <!-- Event Handlers -->
+  <script src="~/lib/razor/js/budget-pe-headcount/budget-pe-headcount.events.js" asp-append-version="true"></script>
+
+  <!-- Fullscreen Toggle -->
+  <script src="~/lib/razor/js/budget-pe-headcount/budget-pe-headcount.fullscreen.js" asp-append-version="true"></script>
+
+  <!-- Excel Export Modules -->
+  <script src="~/lib/razor/js/budget-pe-headcount/budget-pe-headcount.excel.config.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-pe-headcount/budget-pe-headcount.excel.export.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget-pe-headcount/budget-pe-headcount.excel.handlers.js" asp-append-version="true"></script>
+
+  <!-- Main Initialization -->
+  <script src="~/lib/razor/js/budget-pe-headcount/budget-pe-headcount.main.js" asp-append-version="true"></script>
+}
+

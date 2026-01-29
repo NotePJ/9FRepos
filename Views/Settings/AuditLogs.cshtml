@@ -1,0 +1,315 @@
+@{
+    ViewData["Title"] = "Audit Logs";
+}
+
+<h4>Audit Logs</h4>
+<p>ระบบบันทึกการใช้งาน - ประวัติการ Login, Email, Upload และ Activity Logs</p>
+
+<!-- Main Card Container -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="auditLogTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="login-tab" data-coreui-toggle="tab"
+                                data-coreui-target="#login-tab-pane" type="button" role="tab"
+                                aria-controls="login-tab-pane" aria-selected="true">
+                            <i class="fa-solid fa-right-to-bracket me-1"></i> Login Logs
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="email-tab" data-coreui-toggle="tab"
+                                data-coreui-target="#email-tab-pane" type="button" role="tab"
+                                aria-controls="email-tab-pane" aria-selected="false">
+                            <i class="fa-solid fa-envelope me-1"></i> Email Logs
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="upload-tab" data-coreui-toggle="tab"
+                                data-coreui-target="#upload-tab-pane" type="button" role="tab"
+                                aria-controls="upload-tab-pane" aria-selected="false">
+                            <i class="fa-solid fa-cloud-arrow-up me-1"></i> Upload Logs
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="activity-tab" data-coreui-toggle="tab"
+                                data-coreui-target="#activity-tab-pane" type="button" role="tab"
+                                aria-controls="activity-tab-pane" aria-selected="false">
+                            <i class="fa-solid fa-list-check me-1"></i> Activity Logs
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="auditLogTabsContent">
+
+                    <!-- ═══════════════════════════════════════════════════════ -->
+                    <!-- LOGIN LOGS TAB -->
+                    <!-- ═══════════════════════════════════════════════════════ -->
+                    <div class="tab-pane fade show active" id="login-tab-pane" role="tabpanel"
+                         aria-labelledby="login-tab" tabindex="0">
+
+                        <!-- Filter Section -->
+                        <div class="row mb-3 g-2 align-items-end">
+                            <div class="col-md-2">
+                                <label class="form-label small">Date From</label>
+                                <input type="date" class="form-control form-control-sm" id="loginDateFrom">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Date To</label>
+                                <input type="date" class="form-control form-control-sm" id="loginDateTo">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Username</label>
+                                <input type="text" class="form-control form-control-sm" id="loginUsername" placeholder="Search username...">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Status</label>
+                                <select class="form-select form-select-sm" id="loginStatus">
+                                    <option value="">All Status</option>
+                                    <option value="SUCCESS">Success</option>
+                                    <option value="FAILED">Failed</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-core btn-sm" id="btnLoginSearch">
+                                    <i class="fa-solid fa-search"></i> Search
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-sm" id="btnLoginReset">
+                                    <i class="fa-solid fa-rotate-left"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- AG Grid Container -->
+                        <div class="position-relative">
+                            <div class="grid-container" id="loginGridContainer">
+                                <!-- Toolbar Left: Clear Filter -->
+                                <button type="button" id="btnLoginClearFilter" class="clear-filter-btn" title="Clear All Filters">
+                                    <i class="fa-solid fa-filter-circle-xmark"></i>
+                                </button>
+                                <!-- Toolbar Right: Refresh, Export, Fullscreen -->
+                                <button type="button" id="btnLoginRefresh" class="refresh-btn" title="Refresh Data">
+                                    <i class="fa-solid fa-rotate"></i>
+                                </button>
+                                <button type="button" id="btnLoginExportExcel" class="export-excel-btn" title="Export to Excel">
+                                    <i class="fa-regular fa-file-excel export-icon"></i>
+                                </button>
+                                <button type="button" id="btnLoginFullscreen" class="fullscreen-toggle-btn" title="Toggle Fullscreen">
+                                    <i class="fa-solid fa-expand"></i>
+                                </button>
+                                <div id="loginGrid" class="ag-theme-alpine" style="height: 500px; width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ═══════════════════════════════════════════════════════ -->
+                    <!-- EMAIL LOGS TAB -->
+                    <!-- ═══════════════════════════════════════════════════════ -->
+                    <div class="tab-pane fade" id="email-tab-pane" role="tabpanel"
+                         aria-labelledby="email-tab" tabindex="0">
+
+                        <!-- Filter Section -->
+                        <div class="row mb-3 g-2 align-items-end">
+                            <div class="col-md-2">
+                                <label class="form-label small">Date From</label>
+                                <input type="date" class="form-control form-control-sm" id="emailDateFrom">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Date To</label>
+                                <input type="date" class="form-control form-control-sm" id="emailDateTo">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">To Email</label>
+                                <input type="text" class="form-control form-control-sm" id="emailToEmail" placeholder="Search email...">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Status</label>
+                                <select class="form-select form-select-sm" id="emailStatus">
+                                    <option value="">All Status</option>
+                                    <option value="SUCCESS">Success</option>
+                                    <option value="FAILED">Failed</option>
+                                    <option value="PENDING">Pending</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-core btn-sm" id="btnEmailSearch">
+                                    <i class="fa-solid fa-search"></i> Search
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-sm" id="btnEmailReset">
+                                    <i class="fa-solid fa-rotate-left"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- AG Grid Container -->
+                        <div class="position-relative">
+                            <div class="grid-container" id="emailGridContainer">
+                                <!-- Toolbar Left: Clear Filter -->
+                                <button type="button" id="btnEmailClearFilter" class="clear-filter-btn" title="Clear All Filters">
+                                    <i class="fa-solid fa-filter-circle-xmark"></i>
+                                </button>
+                                <!-- Toolbar Right: Refresh, Export, Fullscreen -->
+                                <button type="button" id="btnEmailRefresh" class="refresh-btn" title="Refresh Data">
+                                    <i class="fa-solid fa-rotate"></i>
+                                </button>
+                                <button type="button" id="btnEmailExportExcel" class="export-excel-btn" title="Export to Excel">
+                                    <i class="fa-regular fa-file-excel export-icon"></i>
+                                </button>
+                                <button type="button" id="btnEmailFullscreen" class="fullscreen-toggle-btn" title="Toggle Fullscreen">
+                                    <i class="fa-solid fa-expand"></i>
+                                </button>
+                                <div id="emailGrid" class="ag-theme-alpine" style="height: 500px; width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ═══════════════════════════════════════════════════════ -->
+                    <!-- UPLOAD LOGS TAB -->
+                    <!-- ═══════════════════════════════════════════════════════ -->
+                    <div class="tab-pane fade" id="upload-tab-pane" role="tabpanel"
+                         aria-labelledby="upload-tab" tabindex="0">
+
+                        <!-- Filter Section -->
+                        <div class="row mb-3 g-2 align-items-end">
+                            <div class="col-md-2">
+                                <label class="form-label small">Date From</label>
+                                <input type="date" class="form-control form-control-sm" id="uploadDateFrom">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Date To</label>
+                                <input type="date" class="form-control form-control-sm" id="uploadDateTo">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Uploaded By</label>
+                                <input type="text" class="form-control form-control-sm" id="uploadUsername" placeholder="Search user...">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">File Type</label>
+                                <select class="form-select form-select-sm" id="uploadFileType">
+                                    <option value="">All Types</option>
+                                    <option value="PDF">PDF</option>
+                                    <option value="EXCEL">Excel</option>
+                                    <option value="IMAGE">Image</option>
+                                    <option value="WORD">Word</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-core btn-sm" id="btnUploadSearch">
+                                    <i class="fa-solid fa-search"></i> Search
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-sm" id="btnUploadReset">
+                                    <i class="fa-solid fa-rotate-left"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- AG Grid Container -->
+                        <div class="position-relative">
+                            <div class="grid-container" id="uploadGridContainer">
+                                <!-- Toolbar Left: Clear Filter -->
+                                <button type="button" id="btnUploadClearFilter" class="clear-filter-btn" title="Clear All Filters">
+                                    <i class="fa-solid fa-filter-circle-xmark"></i>
+                                </button>
+                                <!-- Toolbar Right: Refresh, Export, Fullscreen -->
+                                <button type="button" id="btnUploadRefresh" class="refresh-btn" title="Refresh Data">
+                                    <i class="fa-solid fa-rotate"></i>
+                                </button>
+                                <button type="button" id="btnUploadExportExcel" class="export-excel-btn" title="Export to Excel">
+                                    <i class="fa-regular fa-file-excel export-icon"></i>
+                                </button>
+                                <button type="button" id="btnUploadFullscreen" class="fullscreen-toggle-btn" title="Toggle Fullscreen">
+                                    <i class="fa-solid fa-expand"></i>
+                                </button>
+                                <div id="uploadGrid" class="ag-theme-alpine" style="height: 500px; width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ═══════════════════════════════════════════════════════ -->
+                    <!-- ACTIVITY LOGS TAB -->
+                    <!-- ═══════════════════════════════════════════════════════ -->
+                    <div class="tab-pane fade" id="activity-tab-pane" role="tabpanel"
+                         aria-labelledby="activity-tab" tabindex="0">
+
+                        <!-- Filter Section -->
+                        <div class="row mb-3 g-2 align-items-end">
+                            <div class="col-md-2">
+                                <label class="form-label small">Date From</label>
+                                <input type="date" class="form-control form-control-sm" id="activityDateFrom">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Date To</label>
+                                <input type="date" class="form-control form-control-sm" id="activityDateTo">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Module</label>
+                                <select class="form-select form-select-sm" id="activityModule">
+                                    <option value="">All Modules</option>
+                                    <option value="PE Management">PE Management</option>
+                                    <option value="User Management">User Management</option>
+                                    <option value="Role Management">Role Management</option>
+                                    <option value="Master Data">Master Data</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Action</label>
+                                <select class="form-select form-select-sm" id="activityAction">
+                                    <option value="">All Actions</option>
+                                    <option value="CREATE">Create</option>
+                                    <option value="UPDATE">Update</option>
+                                    <option value="DELETE">Delete</option>
+                                    <option value="MOVE_IN">Move In</option>
+                                    <option value="MOVE_OUT">Move Out</option>
+                                    <option value="ADDITIONAL">Additional</option>
+                                    <option value="CUT">Cut</option>
+                                    <option value="APPROVE">Approve</option>
+                                    <option value="REJECT">Reject</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">User ID</label>
+                                <input type="text" class="form-control form-control-sm" id="activityUserId" placeholder="Search user...">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-core btn-sm" id="btnActivitySearch">
+                                    <i class="fa-solid fa-search"></i> Search
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-sm" id="btnActivityReset">
+                                    <i class="fa-solid fa-rotate-left"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- AG Grid Container -->
+                        <div class="position-relative">
+                            <div class="grid-container" id="activityGridContainer">
+                                <!-- Toolbar Left: Clear Filter -->
+                                <button type="button" id="btnActivityClearFilter" class="clear-filter-btn" title="Clear All Filters">
+                                    <i class="fa-solid fa-filter-circle-xmark"></i>
+                                </button>
+                                <!-- Toolbar Right: Refresh, Export, Fullscreen -->
+                                <button type="button" id="btnActivityRefresh" class="refresh-btn" title="Refresh Data">
+                                    <i class="fa-solid fa-rotate"></i>
+                                </button>
+                                <button type="button" id="btnActivityExportExcel" class="export-excel-btn" title="Export to Excel">
+                                    <i class="fa-regular fa-file-excel export-icon"></i>
+                                </button>
+                                <button type="button" id="btnActivityFullscreen" class="fullscreen-toggle-btn" title="Toggle Fullscreen">
+                                    <i class="fa-solid fa-expand"></i>
+                                </button>
+                                <div id="activityGrid" class="ag-theme-alpine" style="height: 500px; width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="~/lib/razor/js/settings/budget.setting.audit-logs.config.js" asp-append-version="true"></script>
+<script src="~/lib/razor/js/settings/budget.setting.audit-logs.js" asp-append-version="true"></script>
+}

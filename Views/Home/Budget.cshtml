@@ -1,0 +1,665 @@
+@{
+  ViewData["Title"] = "Budget Planning";
+}
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="position-fixed top-0 start-0 w-100 h-100 d-none"
+  style="background-color: rgba(0,0,0,0.5); z-index: 9999;">
+  <div class="d-flex justify-content-center align-items-center h-100">
+    <div class="text-center">
+      <button class="btn btn-spiner" type="button" disabled>
+        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        <span role="status">Loading...</span>
+      </button>
+      <div class="text-white" style="display: none;">
+        <span id="loadingText">Loading Budget Data...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h1>@ViewData["Title"]</h1>
+
+<p>Use this page to detail your site's Budget Planning.</p>
+<p>รายละเอียดการวางแผนงบประมาณ</p>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header"><strong>Form validation</strong><span class="small ms-1">Custom styles</span></div>
+      <div class="card-body">
+        <form class="row g-3">
+          <div class="col-md-3">
+            <label for="companyFilter" class="form-label"><b>Company</b> <span style="color:red">*</span></label>
+            <div class="position-relative">
+              <select class="form-select" id="companyFilter">
+                <option value="">All Companies</option>
+              </select>
+              <div
+                class="spinner-border-core spinner-border-sm text-success position-absolute top-50 end-0 translate-middle-y me-3 d-none"
+                id="companySpinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="yearsFilter" class="form-label"><b>Budget Year</b> <span style="color:red">*</span></label>
+            <div class="position-relative">
+              <select class="form-select" id="yearsFilter">
+                <option value="">All Years</option>
+              </select>
+              <div
+                class="spinner-border-core spinner-border-sm text-success position-absolute top-50 end-0 translate-middle-y me-3 d-none"
+                id="yearSpinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="cobuFilter" class="form-label"><b>COBU/Format</b> </label>
+            <div class="position-relative">
+              <select class="form-select" id="cobuFilter">
+                <option value="">All COBU/Format</option>
+              </select>
+              <div
+                class="spinner-border-core spinner-border-sm text-success position-absolute top-50 end-0 translate-middle-y me-3 d-none"
+                id="formatSpinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3" id="cosFilters">
+            <label for="costcenterFilter" class="form-label"><b>Cost Center</b></label>
+            <select class="form-select" id="costcenterFilter">
+              <option value="">All Cost Centers</option>
+            </select>
+          </div>
+          <!-- Additional Filters Group - Hidden by default -->
+
+
+          <div class="col-md-3" id="divFilters">
+            <label for="divisionFilter" class="form-label"><b>Division</b></label>
+            <select class="form-select" id="divisionFilter">
+              <option value="">All Divisions</option>
+            </select>
+          </div>
+          <div class="col-md-3" id="deptFilters">
+            <label for="departmentFilter" class="form-label"><b>Department</b></label>
+            <select class="form-select" id="departmentFilter">
+              <option value="">All Departments</option>
+            </select>
+          </div>
+          <div class="col-md-3" id="secFilters">
+            <label for="sectionFilter" class="form-label"><b>Section</b></label>
+            <select class="form-select" id="sectionFilter">
+              <option value="">All Sections</option>
+            </select>
+          </div>
+          <div class="col-md-3" id="locFilters">
+            <label for="locationsFilter" class="form-label"><b>Company/Store name</b></label>
+            <select class="form-select" id="locationsFilter">
+              <option value="">All Company/Store names</option>
+            </select>
+          </div>
+          <div class="col-md-3" id="empstatFilters">
+            <label for="empstatusFilter" class="form-label"><b>Emp Status</b></label>
+            <select class="form-select" id="empstatusFilter">
+              <option value="">All Emp Status</option>
+            </select>
+          </div>
+          <div class="col-md-3" id="posFilters">
+            <label for="positionFilter" class="form-label"><b>Position</b></label>
+            <select class="form-select" id="positionFilter">
+              <option value="">All Positions</option>
+            </select>
+          </div>
+          <div class="col-md-3" id="jbandFilters">
+            <label for="jobbandFilter" class="form-label"><b>Job Band</b></label>
+            <select class="form-select" id="jobbandFilter">
+              <option value="">All Job Bands</option>
+            </select>
+          </div>
+
+          <!-- More Options and Action Buttons - Full Width on Mobile -->
+          <div class="col-md-3 mt-auto">
+            <div
+              class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mt-3">
+              <div class="w-xauto">
+                <a id="moreOptionsToggle" class="more-options-link mt-xauto">
+                  <i class="fas fa-chevron-down me-2"></i>More Options
+                </a>
+                <div class="btn-group mb-xauto" role="group">
+                  <button class="btn btn-secondary" type="button" id="resetBtn">Reset</button>
+                  <button class="btn btn-core" type="button" id="searchBtn">Search</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="callout callout-core">
+  <div class="d-flex">
+    <div class="flex-shrink-0">
+      <svg class="nav-icon nav-icon-xl">
+        <use xlink:href="@Url.Content("~/lib/adcoreui/icons/svg/free.svg")#cil-info"></use>
+      </svg>
+    </div>
+    <div class="px-3">
+      <p class="card-text">Click <b>Add Row</b> to add a new row to the budget table.
+        <br>Click <b>Cost Centers Overview</b> to view the cost centers summary and details.
+      </p>
+      <button id="addRowBtn" class="btn btn-core-inverse mb-1" type="button" data-permission="BUDGET_EDIT">
+        <i class="fa-solid fa-plus"></i> Add Row (Batch Entry)
+      </button>
+      <button id="toggleMasterGridBtn" class="btn btn-core-inverse mb-1" type="button" data-coreui-toggle="collapse"
+        data-coreui-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+        <i class="fa-solid fa-chart-bar me-2"></i> Cost Centers Overview
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="position-relative">
+  <div class="grid-container" id="budgetGridContainer">
+    <button type="button" id="btnExportBudgetExcel" class="export-excel-btn" title="Export Budget to Excel">
+      <i class="fa-regular fa-file-excel export-icon"></i>
+    </button>
+    <button class="fullscreen-toggle-btn" id="btnToggleBudgetFullscreen" title="Toggle Fullscreen">
+      <i class="fa-solid fa-expand"></i>
+    </button>
+    <div id="budgetAGGrid" class="ag-theme-alpine" style="height: 500px; width: 100%;"></div>
+    <div id="gridLoadingSpinner" class="position-absolute top-50 start-50 translate-middle d-none">
+      <div class="text-center">
+        <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"
+          style="width: 2rem; height: 2rem;">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="text-muted">Loading grid data...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Side Panel (Offcanvas) -->
+<div class="offcanvas offcanvas-end" id="offcanvasAddRow" aria-labelledby="offcanvasAddRowLabel"
+  data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="offcanvas-header">
+    <h5 id="offcanvasAddRowLabel">Budget Row</h5>
+    <button type="button" class="btn-close text-reset" data-coreui-dismiss="offcanvas" aria-label="Close"
+      id="closeOffcanvasBtn"></button>
+  </div>
+  <div class="offcanvas-body">
+    <!-- Personal Info Card -->
+    <div class="card mb-3 shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Personal info</strong>
+        <button type="button" class="collapse-toggle-btn" data-coreui-toggle="collapse"
+          data-coreui-target="#personalInfoCollapse" aria-expanded="false" aria-controls="personalInfoCollapse">
+          <i class="fa-solid fa-chevron-up collapse-icon"></i>
+        </button>
+      </div>
+      <div class="collapse show" id="personalInfoCollapse">
+        <div class="card-body">
+          <form id="editRowForm">
+            <input type="hidden" id="formMode" value="add">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="editCompany" class="form-label"><b>Company</b> <span style="color:red">*</span></label>
+                <select class="form-select" id="editCompany" name="company">
+                  <option value="">Select Company</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editYear" class="form-label"><b>Budget Year</b> <span style="color:red">*</span></label>
+                <select class="form-select" id="editYear" name="year">
+                  <option value="">Select Budget Year</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editCobu" class="form-label"><b>COBU/Format</b> <span style="color:red">*</span></label>
+                <select class="form-select" id="editCobu" name="cobu">
+                  <option value="">Select COBU/Format</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <hr style="margin: 1rem 0;">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editEmpStatus" class="form-label"><b>Employee Status</b> <span
+                    style="color:red">*</span></label>
+                <select class="form-select" id="editEmpStatus" name="empStatus">
+                  <option value="">Select Status</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editCostCenter" class="form-label"><b>Cost Center</b> <span
+                    style="color:red">*</span></label>
+                <select class="form-select" id="editCostCenter" name="costCenterCode">
+                  <option value="">Select Cost Center</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editJoinDate" class="form-label"><b>Join Date</b></label>
+                <input type="date" class="form-control" id="editJoinDate" name="joinDate">
+              </div>
+              <div class="col-12 mb-3">
+                <label for="editRemark" class="form-label"><b>Remark</b></label>
+                <textarea class="form-control" id="editRemark" name="Remark" placeholder="Remark" rows="3"></textarea>
+              </div>
+              <div class="col-12">
+                <hr style="margin: 1rem 0;">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editDivision" class="form-label"><b>Division</b> <span style="color:red">*</span></label>
+                <select class="form-select" id="editDivision" name="division">
+                  <option value="">Select Division</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editDepartment" class="form-label"><b>Department</b> </label>
+                <select class="form-select" id="editDepartment" name="department">
+                  <option value="">Select Department</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editSection" class="form-label"><b>Section</b> </label>
+                <select class="form-select" id="editSection" name="section">
+                  <option value="">Select Section</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editLocation" class="form-label"><b>Company/Store name</b> <span
+                    style="color:red">*</span></label>
+                <select class="form-select" id="editLocation" name="location">
+                  <option value="">Select Company/Store name</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editPosition" class="form-label"><b>Position</b> <span style="color:red">*</span></label>
+                <select class="form-select" id="editPosition" name="position">
+                  <option value="">Select Position</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editJobBand" class="form-label"><b>Job Band</b> <span style="color:red">*</span></label>
+                <select class="form-select" id="editJobBand" name="jobBand">
+                  <option value="">Select Job Bands</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grouping Card - Dynamic Head Count System -->
+    <div class="card mb-3 shadow-sm" id="offcanvasBudgetHeadCountCard">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Grouping</strong>
+        <div class="d-flex gap-2">
+          <button type="button" class="collapse-toggle-btn me-2" data-coreui-toggle="collapse"
+            data-coreui-target="#groupingCollapse" aria-expanded="true" aria-controls="groupingCollapse">
+            <i class="fa-solid fa-chevron-up collapse-icon"></i>
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" id="refreshOffcanvasHeadCountBtn"
+            title="Refresh Head Count Data">
+            <i class="fa-solid fa-refresh"></i> Refresh
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-core" id="addOffcanvasHeadCountBtn">
+            <i class="fa-solid fa-plus"></i> Add Head Count
+          </button>
+        </div>
+      </div>
+      <div class="collapse show" id="groupingCollapse">
+        <div class="card-body">
+          <form id="editRowGroupForm">
+            <div class="row">
+              <div class="col-12 mb-3">
+                <label class="form-label"><b>Head Count Distribution</b></label>
+                <div id="offcanvasHeadCountContainer">
+                  <!-- Dynamic head count rows will be inserted here -->
+                </div>
+              </div>
+
+              <!-- Summary Section -->
+              <div class="col-md-6 mb-3">
+                <label for="offcanvasTotalHeadCount" class="form-label"><b>Total Head Count</b></label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="offcanvasTotalHeadCount" readonly>
+                  <span class="input-group-text">HC</span>
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <div class="alert alert-info py-1" id="offcanvasHeadCountStatus">
+                  <small>Multiple Head Count entries allowed</small>
+                </div>
+              </div>
+
+              <!-- Fixed Fields Section (below dynamic head count rows) -->
+              <div class="col-12">
+                <hr style="margin: 1rem 0;">
+                <h6 class="mb-3">
+                  <i class="fa-solid fa-cog me-2 text-secondary"></i>
+                  Additional Configuration
+                </h6>
+              </div>
+
+              <div class="col-md-4 mb-3 tag-core-hidden">
+                <label for="editGroup" class="form-label"><b>Group</b></label>
+                <select class="form-select" id="editGroup" name="Group">
+                  <option value="">Select Group</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3 tag-core-hidden">
+                <label for="editGroupDiv" class="form-label"><b>Group of Division</b></label>
+                <select class="form-select" id="editGroupDiv" name="GroupDiv">
+                  <option value="">Select Group of Division</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3 tag-core-hidden">
+                <label for="editGroupDept" class="form-label"><b>Group of Department</b></label>
+                <select class="form-select" id="editGroupDept" name="GroupDept">
+                  <option value="">Select Group of Department</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3 tag-core-hidden">
+                <label for="editHRBP" class="form-label"><b>HRBP</b></label>
+                <select class="form-select" id="editHRBP" name="HRBP">
+                  <option value="">Select HRBP</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3 tag-core-hidden"></div>
+              <div class="col-md-4 mb-3 tag-core-hidden"></div>
+
+              <div class="col-12">
+                <hr style="margin: 1rem 0;">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editPlanCostCenter" class="form-label"><b>CostCenter <span
+                      id="planCostCenterYear">2026</span></b> <span style="color:red">*</span></label>
+                <select class="form-select" id="editPlanCostCenter" name="PlanCostCenter">
+                  <option value="">Select CostCenter <span id="planCostCenterYearOption">2026</span></option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editSalaryStructure" class="form-label"><b>Salary Structure</b></label>
+                <select class="form-select" id="editSalaryStructure" name="SalaryStructure">
+                  <option value="">Select Salary Structure</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editRunRateGroup" class="form-label"><b>Run Rate Group</b></label>
+                <select class="form-select" id="editRunRateGroup" name="RunRateGroup">
+                  <option value="">Select Run Rate Group</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editEmployeeLevel" class="form-label"><b>Executive/Non-Executive</b></label>
+                <select class="form-select" id="editEmployeeLevel" name="EmployeeLevel">
+                  <option value="">Select Executive/Non-Executive</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editFocusHC" class="form-label"><b>Focus Headcount</b></label>
+                <select class="form-select" id="editFocusHC" name="FocusHC">
+                  <option value="">Select Focus Headcount</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="editFocusPE" class="form-label"><b>Focus Personnel Expense</b></label>
+                <select class="form-select" id="editFocusPE" name="FocusPE">
+                  <option value="">Select Focus Personnel Expense</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Budget Allocation Card -->
+    <div class="card mb-3 shadow-sm d-none" id="budgetAllocationCard">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Allocation</strong>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-sm btn-outline-secondary" id="refreshCostCentersBtn"
+            title="Refresh Cost Centers">
+            <i class="fa-solid fa-refresh"></i> Refresh
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-core" id="addAllocationBtn">
+            <i class="fa-solid fa-plus"></i> Add Cost Center
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <form id="editRowAllocationForm">
+          <div class="row">
+            <div class="col-12 mb-3">
+              <label class="form-label"><b>Cost Center Distribution</b></label>
+              <div id="allocationContainer">
+                <!-- Dynamic allocation rows will be inserted here -->
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="totalAllocation" class="form-label"><b>Total Allocation</b></label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="totalAllocation" readonly>
+                <span class="input-group-text">%</span>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="alert alert-info py-1 allocation-mt" id="allocationStatus">
+                <small>Total must equal 100%</small>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- LE Benefits Card (Dynamic Template) -->
+    <div class="card mb-3 shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Payroll & Benefits Records LE <span id="leBenefitsYear">2024</span> (Oct–Dec)</strong>
+        <button type="button" class="collapse-toggle-btn" data-coreui-toggle="collapse"
+          data-coreui-target="#leBenefitsCollapse" aria-expanded="true" aria-controls="leBenefitsCollapse">
+          <i class="fa-solid fa-chevron-up collapse-icon"></i>
+        </button>
+      </div>
+      <div class="collapse show" id="leBenefitsCollapse">
+        <div class="card-body">
+          <form id="editRowLeBenefitForm">
+            <div class="row">
+              <!-- Dynamic LE Benefits fields will be generated here based on baseColumns -->
+            </div>
+          </form>
+
+          <!-- Dynamic LE Benefits Forms สำหรับ Multi Cost Center Allocation -->
+          <div id="dynamicLeBenefitsContainer" class="d-none">
+            <hr class="my-3 border-secondary">
+            <h6 class="mb-3">
+              <i class="fa-solid fa-layer-group me-2 text-info"></i>
+              LE Benefits per Cost Center Allocation
+            </h6>
+            <div id="dynamicLeBenefitsForms">
+              <!-- Dynamic forms จะถูกสร้างที่นี่ -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Budget year Benefits Card (Dynamic Template) -->
+    <div class="card mb-3 shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Payroll & Benefits Records <span id="benefitsYear">2026</span></strong>
+        <button type="button" class="collapse-toggle-btn" data-coreui-toggle="collapse"
+          data-coreui-target="#bgBenefitsCollapse" aria-expanded="true" aria-controls="bgBenefitsCollapse">
+          <i class="fa-solid fa-chevron-up collapse-icon"></i>
+        </button>
+      </div>
+      <div class="collapse show" id="bgBenefitsCollapse">
+        <div class="card-body">
+          <form id="editRowBgBenefitForm">
+            <div class="row">
+              <!-- Dynamic Budget Benefits fields will be generated here based on baseColumns -->
+            </div>
+          </form>
+
+          <!-- Dynamic 2026 Benefits Forms สำหรับ Multi Cost Center Allocation -->
+          <div id="dynamicBgBenefitsContainer" class="d-none">
+            <hr class="my-3 border-secondary">
+            <h6 class="mb-3">
+              <i class="fa-solid fa-layer-group me-2 text-info"></i>
+              <span id="dynamicBgBenefitsYear">2026</span> Benefits per Cost Center Allocation
+            </h6>
+            <div id="dynamicBgBenefitsForms">
+              <!-- Dynamic forms จะถูกสร้างที่นี่ -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body text-end">
+        <button type="button" class="btn btn-core-secondary-inverse" id="cancelEditBtn">Cancel</button>
+        <button type="button" class="btn btn-core" id="updateRowBtn">Update</button>
+        <button type="button" class="btn btn-core" id="saveEditBtn">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NEW: Master-Detail-Benefits Grid Implementation -->
+<!-- Master Grid (Top) - Cost Centers -->
+<div class="docs-content mt-4" id="masterGridSection">
+  <div class="collapse" id="collapseExample">
+    <h3 class="mb-3">Cost Centers Overview</h3>
+    <p>Click on a Cost Center to view detailed Employee budget allocations and benefits.</p>
+    <div class="mb-4">
+      <div class="grid-container" id="masterGridContainer">
+        <button type="button" id="btnExportMasterExcel" class="export-excel-btn" title="Export Master to Excel">
+          <i class="fa-regular fa-file-excel export-icon"></i>
+        </button>
+        <button class="fullscreen-toggle-btn" id="btnToggleMasterFullscreen" title="Toggle Fullscreen">
+          <i class="fa-solid fa-expand"></i>
+        </button>
+        <div id="masterGrid" class="ag-theme-alpine" style="height:400px;width:100%;"></div>
+      </div>
+    </div>
+    <!-- Detail Grid (Bottom) - Employees -->
+    <h3 class="mb-3">Employee Details</h3>
+    <p>Click on an Employee to view detailed budget allocations and benefits.</p>
+    <div class="mb-4">
+      <div class="grid-container" id="detailGridContainer">
+        <button type="button" id="btnExportDetailExcel" class="export-excel-btn" title="Export Detail to Excel">
+          <i class="fa-regular fa-file-excel export-icon"></i>
+        </button>
+        <button class="fullscreen-toggle-btn" id="btnToggleDetailFullscreen" title="Toggle Fullscreen">
+          <i class="fa-solid fa-expand"></i>
+        </button>
+        <div id="detailGrid" class="ag-theme-alpine" style="height:500px;width:100%;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Side Panel Benefits (Offcanvas) -->
+<div class="offcanvas offcanvas-end" id="offcanvasBenefits" aria-labelledby="offcanvasBenefitsLabel"
+  data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasBenefitsLabel">Benefits Details</h5>
+    <button type="button" class="btn-close text-reset" data-coreui-dismiss="offcanvas" aria-label="Close"
+      id="closeOffcanvasBenefitsBtn"></button>
+  </div>
+  <div class="offcanvas-body">
+    <!-- Content for Benefits Details -->
+    <div id="benefitsGrid" class="ag-theme-alpine" style="height:100%;width:100%;"></div>
+  </div>
+</div>
+
+<!-- Modal Confirm Save -->
+<div class="modal fade" id="confirmSaveModal" tabindex="-1" aria-labelledby="confirmSaveModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="d-flex align-items-start">
+          <div class="flex-shrink-0 me-3">
+            <svg class="nav-icon nav-icon-xl text-core">
+              <use xlink:href="@Url.Content("~/lib/adcoreui/icons/svg/free.svg")#cil-save"></use>
+            </svg>
+          </div>
+          <div class="flex-grow-1">
+            <h5 class="mb-2" id="confirmSaveModalLabel">Confirm Save</h5>
+            <p class="mb-0 text-muted">Do you want to save this data?</p>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-end">
+        <button type="button" class="btn btn-secondary" id="cancelSaveBtn" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-core" id="confirmSaveBtn">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Confirm Update -->
+<div class="modal fade" id="confirmUpdateModal" tabindex="-1" aria-labelledby="confirmUpdateModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="d-flex align-items-start">
+          <div class="flex-shrink-0 me-3">
+            <svg class="nav-icon nav-icon-xl text-core">
+              <use xlink:href="@Url.Content("~/lib/adcoreui/icons/svg/free.svg")#cil-pencil"></use>
+            </svg>
+          </div>
+          <div class="flex-grow-1">
+            <h5 class="mb-2" id="confirmUpdateModalLabel">Confirm Update</h5>
+            <p class="mb-0 text-muted">Do you want to update this data?</p>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-end">
+        <button type="button" class="btn btn-secondary" id="cancelUpdateBtn" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-core" id="confirmUpdateBtn">Update</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+@section Scripts {
+  <!-- Phase 1: Core files -->
+  <script src="~/lib/razor/js/budget/budget.config.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget/budget.core.js" asp-append-version="true"></script>
+
+  <!-- Phase 2: Major modules -->
+  <script src="~/lib/razor/js/budget/budget.api.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget/budget.grid.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget/budget.filters.js" asp-append-version="true"></script>
+
+  <!-- Phase 3: Dynamic Forms System (NEW) -->
+  <script src="~/lib/razor/js/budget/budget.dynamic.forms.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget/budget.form.validation.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget/budget.benefits.templates.js" asp-append-version="true"></script>
+
+  <!-- Phase 4: Event handling and UI modules -->
+  <script src="~/lib/razor/js/budget/budget.events.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget/budget.offcanvas.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget/budget.offcanvas.fullscreen.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget/budget.fullscreen.js" asp-append-version="true"></script>
+  <script src="~/lib/razor/js/budget/budget.allocation.js" asp-append-version="true"></script>
+
+  <!-- Main initialization module -->
+  <script src="~/lib/razor/js/budget/budget.main.js" asp-append-version="true"></script>
+
+  <!-- Options toggle (separate module) -->
+  <script src="~/lib/razor/js/budget.options.js" asp-append-version="true"></script>
+}
